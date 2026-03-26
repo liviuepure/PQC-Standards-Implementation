@@ -29,3 +29,8 @@
 extern crate alloc;
 
 pub mod ntt;
+pub mod params;
+pub mod encode;
+pub mod compress;
+pub mod sampling;
+pub mod hash;
