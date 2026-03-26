@@ -4,6 +4,7 @@ members = [
     "pqc-common",
     "ml-kem",
     "ml-dsa",
+    "slh-dsa",
 ]
 
 [workspace.package]
