@@ -21,7 +21,7 @@ Pure implementations of NIST Post-Quantum Cryptography standards across multiple
 | Go       | ✅     | -      | -       | -      | -   |
 | JS/TS    | ✅     | -      | -       | -      | -   |
 | Python   | ✅     | -      | -       | -      | -   |
-| Java     | 🔄     | -      | -       | -      | -   |
+| Java     | ✅     | -      | -       | -      | -   |
 
 ## ML-KEM — Complete (All Languages)
 
