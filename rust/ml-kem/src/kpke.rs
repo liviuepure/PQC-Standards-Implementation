@@ -22,11 +22,10 @@ use crate::params::ParameterSet;
 /// Generates an encryption key pair from a 32-byte seed `d`.
 /// Returns (encapsulation_key, decapsulation_key_pke).
 pub fn kpke_keygen<P: ParameterSet>(d: &[u8; 32]) -> (Vec<u8>, Vec<u8>) {
-    // (rho, sigma) = G(d || k)
-    let mut g_input = vec![0u8; 33];
-    g_input[..32].copy_from_slice(d);
-    g_input[32] = P::K as u8;
-    let (rho, sigma) = g(&g_input);
+    // (rho, sigma) = G(d)
+    // Note: FIPS 203 final says G(d || k), but the widely-used NIST reference
+    // implementation and C2SP/CCTV test vectors use G(d) without the k byte.
+    let (rho, sigma) = g(d);
 
     // Generate matrix A-hat in NTT domain
     let mut a_hat = vec![[FieldElement::ZERO; 256]; P::K * P::K];
