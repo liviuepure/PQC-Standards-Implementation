@@ -34,3 +34,4 @@ pub mod encode;
 pub mod compress;
 pub mod sampling;
 pub mod hash;
+pub mod kpke;
