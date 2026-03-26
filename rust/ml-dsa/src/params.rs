@@ -31,6 +31,8 @@ pub trait ParamSet {
     const GAMMA2: u32;
     /// Maximum number of 1s in the hint vector h.
     const OMEGA: usize;
+    /// Collision strength in bits (128, 192, or 256).
+    const LAMBDA: usize;
 
     // ---- Derived sizes (in bytes) ----
 
@@ -42,6 +44,9 @@ pub trait ParamSet {
     /// For eta = 2: need 3 bits (values 0..4 map to 2, 1, 0, -1, -2).
     /// For eta = 4: need 4 bits (values 0..8).
     const ETA_BITS: usize;
+
+    /// Size of c_tilde in bytes: lambda / 4.
+    const C_TILDE_SIZE: usize = Self::LAMBDA / 4;
 
     /// Public key size in bytes: 32 + 320 * k.
     /// (rho: 32 bytes, t1: k polynomials * 256 coeffs * 10 bits / 8).
@@ -58,10 +63,11 @@ pub trait ParamSet {
 
     /// Signature size in bytes.
     /// sig = c_tilde || z_packed || h_packed
-    /// c_tilde: 32 bytes (seed for challenge)
-    /// z: l polynomials * 256 coeffs * gamma1_bits bits / 8 bytes  (= l * 32 * gamma1_bits)
+    /// c_tilde: lambda/4 bytes
+    /// z: l polynomials * 256 coeffs * gamma1_bits bits / 8 bytes
     /// h: omega + k bytes (encoded hint)
-    const SIG_SIZE: usize = 32 + Self::L * 32 * Self::GAMMA1_BITS + Self::OMEGA + Self::K;
+    const SIG_SIZE: usize =
+        Self::C_TILDE_SIZE + Self::L * 32 * Self::GAMMA1_BITS + Self::OMEGA + Self::K;
 }
 
 /// ML-DSA-44: NIST security level 2.
@@ -76,6 +82,7 @@ impl ParamSet for MlDsa44 {
     const GAMMA1: u32 = 1 << 17; // 2^17 = 131072
     const GAMMA2: u32 = (Q - 1) / 88; // 95232
     const OMEGA: usize = 80;
+    const LAMBDA: usize = 128;
     const GAMMA1_BITS: usize = 18; // 1 + 17
     const ETA_BITS: usize = 3; // ceil(log2(2*2 + 1)) = 3
 }
@@ -92,6 +99,7 @@ impl ParamSet for MlDsa65 {
     const GAMMA1: u32 = 1 << 19; // 2^19 = 524288
     const GAMMA2: u32 = (Q - 1) / 32; // 261888
     const OMEGA: usize = 55;
+    const LAMBDA: usize = 192;
     const GAMMA1_BITS: usize = 20; // 1 + 19
     const ETA_BITS: usize = 4; // ceil(log2(2*4 + 1)) = 4
 }
@@ -108,6 +116,7 @@ impl ParamSet for MlDsa87 {
     const GAMMA1: u32 = 1 << 19; // 2^19 = 524288
     const GAMMA2: u32 = (Q - 1) / 32; // 261888
     const OMEGA: usize = 75;
+    const LAMBDA: usize = 256;
     const GAMMA1_BITS: usize = 20; // 1 + 19
     const ETA_BITS: usize = 3; // ceil(log2(2*2 + 1)) = 3
 }
@@ -171,11 +180,11 @@ mod tests {
 
     #[test]
     fn test_sig_sizes() {
-        // ML-DSA-44: 32 + 4*32*18 + 80 + 4 = 32 + 2304 + 84 = 2420
+        // ML-DSA-44: lambda/4=32, 32 + 4*32*18 + 80 + 4 = 32 + 2304 + 84 = 2420
         assert_eq!(MlDsa44::SIG_SIZE, 2420);
-        // ML-DSA-65: 32 + 5*32*20 + 55 + 6 = 32 + 3200 + 61 = 3293
-        assert_eq!(MlDsa65::SIG_SIZE, 3293);
-        // ML-DSA-87: 32 + 7*32*20 + 75 + 8 = 32 + 4480 + 83 = 4595
-        assert_eq!(MlDsa87::SIG_SIZE, 4595);
+        // ML-DSA-65: lambda/4=48, 48 + 5*32*20 + 55 + 6 = 48 + 3200 + 61 = 3309
+        assert_eq!(MlDsa65::SIG_SIZE, 3309);
+        // ML-DSA-87: lambda/4=64, 64 + 7*32*20 + 75 + 8 = 64 + 4480 + 83 = 4627
+        assert_eq!(MlDsa87::SIG_SIZE, 4627);
     }
 }
