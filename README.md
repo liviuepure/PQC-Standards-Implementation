@@ -6,7 +6,7 @@ Pure implementations of NIST Post-Quantum Cryptography standards across multiple
 
 | Standard | Algorithm | Type | Status |
 |----------|-----------|------|--------|
-| **FIPS 203** | ML-KEM (Kyber) | Key Encapsulation | Rust |
+| **FIPS 203** | ML-KEM (Kyber) | Key Encapsulation | ✅ All languages |
 | **FIPS 204** | ML-DSA (Dilithium) | Digital Signature | Planned |
 | **FIPS 205** | SLH-DSA (SPHINCS+) | Hash-Based Signature | Planned |
 | Hybrid KEMs | X25519MLKEM768, X-Wing | Hybrid Key Exchange | Planned |
@@ -17,15 +17,15 @@ Pure implementations of NIST Post-Quantum Cryptography standards across multiple
 
 | Language | ML-KEM | ML-DSA | SLH-DSA | Hybrid | TLS |
 |----------|--------|--------|---------|--------|-----|
-| Rust     | Done   | -      | -       | -      | -   |
-| Go       | -      | -      | -       | -      | -   |
-| JS/TS    | -      | -      | -       | -      | -   |
-| Python   | -      | -      | -       | -      | -   |
-| Java     | -      | -      | -       | -      | -   |
+| Rust     | ✅     | -      | -       | -      | -   |
+| Go       | ✅     | -      | -       | -      | -   |
+| JS/TS    | ✅     | -      | -       | -      | -   |
+| Python   | ✅     | -      | -       | -      | -   |
+| Java     | 🔄     | -      | -       | -      | -   |
 
-## ML-KEM (Rust) — Complete
+## ML-KEM — Complete (All Languages)
 
-All 18 parameter sets validated against official C2SP/CCTV test vectors.
+All parameter sets validated against official C2SP/CCTV test vectors.
 
 ```rust
 use ml_kem::{MlKem768, keygen, encapsulate, decapsulate};
@@ -52,12 +52,11 @@ PQC-Standards-Implementation/
 ├── rust/           # Rust implementations
 │   ├── pqc-common/ # Shared field arithmetic
 │   └── ml-kem/     # ML-KEM (FIPS 203)
-├── go/             # Go implementations (planned)
-├── js/             # JavaScript/TypeScript (planned)
-├── python/         # Python implementations (planned)
-├── java/           # Java implementations (planned)
-├── test-vectors/   # Shared NIST KAT vectors
-└── docs/           # Design documents and plans
+├── go/             # Go implementations
+├── js/             # JavaScript (ES modules, Node.js 20+)
+├── python/         # Python implementations (3.10+)
+├── java/           # Java implementations (17+, Maven)
+└── test-vectors/   # Shared NIST KAT vectors
 ```
 
 ## Security
@@ -66,11 +65,6 @@ PQC-Standards-Implementation/
 - Implicit rejection on decapsulation failure
 - No unsafe code in crypto paths
 - OS CSPRNG for all randomness
-
-This is a research/portfolio implementation. For production use, consider audited libraries like
-[cloudflare/circl](https://github.com/cloudflare/circl) (Go),
-[RustCrypto](https://github.com/RustCrypto/KEMs) (Rust),
-or [@noble/post-quantum](https://github.com/paulmillr/noble-post-quantum) (JS).
 
 ## License
 
