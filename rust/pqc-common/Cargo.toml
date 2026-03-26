@@ -1,0 +1,17 @@
+[package]
+name = "pqc-common"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Shared primitives for PQC standard implementations"
+
+[dependencies]
+subtle = { workspace = true }
+zeroize = { workspace = true, optional = true }
+rand_core = { workspace = true }
+
+[features]
+default = []
+std = ["subtle/std", "rand_core/std"]
+zeroize = ["dep:zeroize"]
