@@ -88,6 +88,12 @@ public struct SlhAddress {
         setHashAddress(v)
     }
 
+    // Get keypair address [20..23]
+    public func getKeyPairAddress() -> UInt32 {
+        return UInt32(data[20]) << 24 | UInt32(data[21]) << 16 |
+               UInt32(data[22]) << 8 | UInt32(data[23])
+    }
+
     public func copy() -> SlhAddress {
         var a = SlhAddress()
         a.data = self.data

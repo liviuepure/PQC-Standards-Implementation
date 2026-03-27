@@ -85,15 +85,17 @@ public enum KemNtt {
             }
             len *= 2
         }
-        // Multiply by n^{-1} mod q: 256^{-1} mod 3329 = 3316
-        // Since 3329 = 13*256 + 1, so 256 * (-13) = 1 (mod 3329), so 256^{-1} = 3329-13 = 3316
-        let nInv: Int32 = 3316
+        // Multiply by 128^{-1} mod q = 3303
+        // Per FIPS 203: the 7-layer NTT accumulates a factor of 128, not 256
+        // 128 * 3303 = 1 (mod 3329)
+        let nInv: Int32 = 3303
         for i in 0..<256 {
             f[i] = KemField.mul(f[i], nInv)
         }
     }
 
     /// Basemul: multiply two NTT-domain polynomials pairwise
+    /// gammas[2i] = zetas[64+i] for even pair, gammas[2i+1] = -zetas[64+i] for odd pair
     public static func basemul(_ a: [Int32], _ b: [Int32]) -> [Int32] {
         var r = [Int32](repeating: 0, count: 256)
         for i in 0..<128 {

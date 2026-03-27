@@ -28,12 +28,13 @@ public enum SlhHash {
         return KemHash.shake256(pkSeed + adrs.data + m, outputLen: params.n)
     }
 
-    /// Hmsg: SHAKE-256(R || PK.seed || PK.root || msg, 8*ceil(k*a/8))
+    /// Hmsg: SHAKE-256(R || PK.seed || PK.root || msg, outputLen)
+    /// Output must have enough bytes for: ceil(k*a/8) for md + ceil((h-h/d)/8) for tree index + ceil((h/d)/8) for leaf index
     public static func hMsg(params: SlhDsaParams, r: [UInt8], pkSeed: [UInt8], pkRoot: [UInt8], msg: [UInt8]) -> [UInt8] {
-        let outputLen = (params.k * params.a + 7) / 8 + ((params.h - params.h / params.d + 7) / 8) + (((params.h / params.d) + 7) / 8)
-        // Actually: ceil((k * log2(2^a)) / 8) + ... We need k*a bits for FORS + h-h/d bits for tree + h/d bits for leaf
-        let totalBits = params.k * params.a + params.h - params.h / params.d + params.h / params.d
-        let totalBytes = (totalBits + 7) / 8
+        let mdBytes = (params.k * params.a + 7) / 8
+        let treeBytes = (params.h - params.h / params.d + 7) / 8
+        let leafBytes = (params.h / params.d + 7) / 8
+        let totalBytes = mdBytes + treeBytes + leafBytes
         return KemHash.shake256(r + pkSeed + pkRoot + msg, outputLen: totalBytes)
     }
 

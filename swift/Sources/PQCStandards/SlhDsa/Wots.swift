@@ -15,20 +15,19 @@ public enum WotsPlus {
     /// Generate WOTS+ public key
     public static func pkGen(params: SlhDsaParams, skSeed: [UInt8], pkSeed: [UInt8],
                              adrs: inout SlhAddress) -> [UInt8] {
+        let kpAddr = adrs.getKeyPairAddress()
         var wotsPkAdrs = adrs.copy()
         var tmp = [UInt8]()
 
         for i in 0..<params.len {
+            adrs.setType(SlhAddress.wotsKeyPrf)
+            adrs.setKeyPairAddress(kpAddr)
             adrs.setChainAddress(UInt32(i))
             adrs.setHashAddress(0)
-            adrs.setType(SlhAddress.wotsKeyPrf)
-            adrs.setKeyPairAddress(wotsPkAdrs.data[20..<24].withUnsafeBufferPointer { buf in
-                let p = buf.baseAddress!
-                return UInt32(p[0]) << 24 | UInt32(p[1]) << 16 | UInt32(p[2]) << 8 | UInt32(p[3])
-            })
             let sk = SlhHash.prf(params: params, pkSeed: pkSeed, skSeed: skSeed, adrs: adrs)
 
             adrs.setType(SlhAddress.wotsHash)
+            adrs.setKeyPairAddress(kpAddr)
             adrs.setChainAddress(UInt32(i))
             let node = chain(params: params, x: sk, start: 0, steps: params.w - 1,
                             pkSeed: pkSeed, adrs: &adrs)
@@ -36,6 +35,7 @@ public enum WotsPlus {
         }
 
         wotsPkAdrs.setType(SlhAddress.wotsPk)
+        wotsPkAdrs.setKeyPairAddress(kpAddr)
         return SlhHash.tl(params: params, pkSeed: pkSeed, adrs: wotsPkAdrs, m: tmp)
     }
 
@@ -48,7 +48,7 @@ public enum WotsPlus {
         let allW = baseW + csum
 
         var sig = [UInt8]()
-        let kpAddr = getKeyPairAddress(adrs)
+        let kpAddr = adrs.getKeyPairAddress()
 
         for i in 0..<params.len {
             adrs.setType(SlhAddress.wotsKeyPrf)
@@ -58,6 +58,7 @@ public enum WotsPlus {
             let sk = SlhHash.prf(params: params, pkSeed: pkSeed, skSeed: skSeed, adrs: adrs)
 
             adrs.setType(SlhAddress.wotsHash)
+            adrs.setKeyPairAddress(kpAddr)
             adrs.setChainAddress(UInt32(i))
             let node = chain(params: params, x: sk, start: 0, steps: allW[i],
                             pkSeed: pkSeed, adrs: &adrs)
@@ -73,11 +74,13 @@ public enum WotsPlus {
         let csum = checksum(baseW: baseW, w: params.w, len2: params.len2, lgW: params.lgW)
         let allW = baseW + csum
 
+        let kpAddr = adrs.getKeyPairAddress()
         var wotsPkAdrs = adrs.copy()
         var tmp = [UInt8]()
 
         for i in 0..<params.len {
             adrs.setType(SlhAddress.wotsHash)
+            adrs.setKeyPairAddress(kpAddr)
             adrs.setChainAddress(UInt32(i))
             let sigBlock = Array(sig[(i * params.n)..<((i + 1) * params.n)])
             let node = chain(params: params, x: sigBlock, start: allW[i],
@@ -86,13 +89,8 @@ public enum WotsPlus {
         }
 
         wotsPkAdrs.setType(SlhAddress.wotsPk)
+        wotsPkAdrs.setKeyPairAddress(kpAddr)
         return SlhHash.tl(params: params, pkSeed: pkSeed, adrs: wotsPkAdrs, m: tmp)
-    }
-
-    // Helper: extract keypair address
-    static func getKeyPairAddress(_ adrs: SlhAddress) -> UInt32 {
-        return UInt32(adrs.data[20]) << 24 | UInt32(adrs.data[21]) << 16 |
-               UInt32(adrs.data[22]) << 8 | UInt32(adrs.data[23])
     }
 
     /// Convert message to base-w representation

@@ -6,8 +6,8 @@ public struct SlhDsaParams {
     public let h: Int          // Total tree height
     public let d: Int          // Number of layers (hypertree)
     public let hPrime: Int     // Height of each XMSS tree (h/d)
-    public let a: Int          // FORS trees count
-    public let k: Int          // FORS tree height
+    public let a: Int          // FORS tree height (log2 of leaves per tree)
+    public let k: Int          // Number of FORS trees
     public let w: Int          // Winternitz parameter
     public let lgW: Int        // log2(w)
     public let isSHAKE: Bool   // true = SHAKE, false = SHA2
@@ -25,7 +25,7 @@ public struct SlhDsaParams {
     // Sizes
     public var sigBytes: Int {
         // SLH-DSA sig = R (n bytes) + FORS sig + HT sig
-        let forsSig = (a * (k + 1)) * n
+        let forsSig = k * (a + 1) * n
         let htSig = d * (len + hPrime) * n
         return n + forsSig + htSig
     }
@@ -35,18 +35,18 @@ public struct SlhDsaParams {
     // SLH-DSA-SHAKE-128f
     public static let shake128f = SlhDsaParams(
         name: "SLH-DSA-SHAKE-128f",
-        n: 16, h: 66, d: 22, hPrime: 3, a: 35, k: 6, w: 16, lgW: 4, isSHAKE: true
+        n: 16, h: 66, d: 22, hPrime: 3, a: 6, k: 33, w: 16, lgW: 4, isSHAKE: true
     )
 
     // SLH-DSA-SHAKE-128s
     public static let shake128s = SlhDsaParams(
         name: "SLH-DSA-SHAKE-128s",
-        n: 16, h: 63, d: 7, hPrime: 9, a: 14, k: 12, w: 16, lgW: 4, isSHAKE: true
+        n: 16, h: 63, d: 7, hPrime: 9, a: 12, k: 14, w: 16, lgW: 4, isSHAKE: true
     )
 
     // SLH-DSA-SHAKE-256f
     public static let shake256f = SlhDsaParams(
         name: "SLH-DSA-SHAKE-256f",
-        n: 32, h: 68, d: 17, hPrime: 4, a: 35, k: 9, w: 16, lgW: 4, isSHAKE: true
+        n: 32, h: 68, d: 17, hPrime: 4, a: 9, k: 35, w: 16, lgW: 4, isSHAKE: true
     )
 }

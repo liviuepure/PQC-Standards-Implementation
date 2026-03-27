@@ -4,10 +4,13 @@ public enum Fors {
     /// FORS tree leaf
     public static func forsLeaf(params: SlhDsaParams, skSeed: [UInt8], pkSeed: [UInt8],
                                 adrs: inout SlhAddress, idx: UInt32) -> [UInt8] {
+        let kpAddr = adrs.getKeyPairAddress()
         adrs.setType(SlhAddress.forsKeyPrf)
+        adrs.setKeyPairAddress(kpAddr)
         adrs.setTreeIndex(idx)
         let sk = SlhHash.prf(params: params, pkSeed: pkSeed, skSeed: skSeed, adrs: adrs)
         adrs.setType(SlhAddress.forsTree)
+        adrs.setKeyPairAddress(kpAddr)
         adrs.setTreeHeight(0)
         adrs.setTreeIndex(idx)
         return SlhHash.f(params: params, pkSeed: pkSeed, adrs: adrs, m: sk)
@@ -23,7 +26,9 @@ public enum Fors {
                            adrs: &adrs, idx: 2 * idx, height: height - 1)
         let right = forsNode(params: params, skSeed: skSeed, pkSeed: pkSeed,
                             adrs: &adrs, idx: 2 * idx + 1, height: height - 1)
+        let kpAddr = adrs.getKeyPairAddress()
         adrs.setType(SlhAddress.forsTree)
+        adrs.setKeyPairAddress(kpAddr)
         adrs.setTreeHeight(UInt32(height))
         adrs.setTreeIndex(idx)
         return SlhHash.h(params: params, pkSeed: pkSeed, adrs: adrs, m1: left, m2: right)
@@ -33,6 +38,7 @@ public enum Fors {
     public static func sign(params: SlhDsaParams, md: [UInt8], skSeed: [UInt8],
                            pkSeed: [UInt8], adrs: inout SlhAddress) -> [UInt8] {
         let indices = SlhHash.messageToIndices(md: md, k: params.k, a: params.a)
+        let kpAddr = adrs.getKeyPairAddress()
         var sig = [UInt8]()
 
         for i in 0..<params.k {
@@ -41,6 +47,7 @@ public enum Fors {
 
             // Secret key value
             adrs.setType(SlhAddress.forsKeyPrf)
+            adrs.setKeyPairAddress(kpAddr)
             adrs.setTreeIndex(treeOffset + idx)
             let sk = SlhHash.prf(params: params, pkSeed: pkSeed, skSeed: skSeed, adrs: adrs)
             sig.append(contentsOf: sk)
@@ -64,6 +71,7 @@ public enum Fors {
                                  pkSeed: [UInt8], adrs: inout SlhAddress) -> [UInt8] {
         let n = params.n
         let indices = SlhHash.messageToIndices(md: md, k: params.k, a: params.a)
+        let kpAddr = adrs.getKeyPairAddress()
         var roots = [UInt8]()
 
         var sigOff = 0
@@ -74,6 +82,7 @@ public enum Fors {
 
             // Compute leaf from sk
             adrs.setType(SlhAddress.forsTree)
+            adrs.setKeyPairAddress(kpAddr)
             adrs.setTreeHeight(0)
             let treeIdx = UInt32(i) * (1 << params.a) + idx
             adrs.setTreeIndex(treeIdx)
@@ -100,6 +109,7 @@ public enum Fors {
         }
 
         adrs.setType(SlhAddress.forsRoots)
+        adrs.setKeyPairAddress(kpAddr)
         adrs.setTreeHeight(0)
         adrs.setTreeIndex(0)
         return SlhHash.tl(params: params, pkSeed: pkSeed, adrs: adrs, m: roots)
