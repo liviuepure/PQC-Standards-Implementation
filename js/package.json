@@ -1,11 +1,17 @@
 {
-  "name": "@pqc/ml-kem",
+  "name": "@pqc/standards",
   "version": "0.1.0",
-  "description": "Pure JavaScript implementation of ML-KEM (FIPS 203)",
+  "description": "Pure JavaScript implementations of ML-KEM, ML-DSA, SLH-DSA (FIPS 203/204/205)",
   "type": "module",
+  "sideEffects": false,
   "main": "src/index.js",
   "exports": {
-    ".": "./src/index.js"
+    ".": "./src/index.js",
+    "./ml-kem": "./src/kem.js",
+    "./ml-dsa": "./src/mldsa/dsa.js",
+    "./slh-dsa": "./src/slhdsa/slhdsa.js",
+    "./hybrid": "./src/hybrid/hybrid_kem.js",
+    "./composite": "./src/composite/composite_sig.js"
   },
   "license": "MIT",
   "scripts": {
