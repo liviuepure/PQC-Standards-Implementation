@@ -1,3 +1,6 @@
+using System.Buffers.Binary;
+using System.Runtime.CompilerServices;
+
 namespace PqcStandards.Common;
 
 /// <summary>
@@ -34,8 +37,9 @@ public static class Keccak
 
     private static byte[] Sponge(byte[] input, int outputLength, int rate, byte domainSuffix)
     {
-        // State: 25 x 64-bit words = 200 bytes
-        ulong[] state = new ulong[25];
+        // State: 25 x 64-bit words = 200 bytes — stack allocated, zero-initialized
+        Span<ulong> state = stackalloc ulong[25];
+        state.Clear();
 
         int blockSize = rate;
         int offset = 0;
@@ -45,21 +49,22 @@ public static class Keccak
         // Process full blocks
         while (remaining >= blockSize)
         {
-            AbsorbBlock(state, input, offset, blockSize);
+            AbsorbBlock(state, input.AsSpan(offset, blockSize));
             KeccakF1600(state);
             offset += blockSize;
             remaining -= blockSize;
         }
 
-        // Pad the final block (pad10*1)
-        byte[] lastBlock = new byte[blockSize];
+        // Pad the final block (pad10*1) — max rate is 168 bytes, safe for stack
+        Span<byte> lastBlock = stackalloc byte[blockSize];
+        lastBlock.Clear();
         if (remaining > 0)
-            Buffer.BlockCopy(input, offset, lastBlock, 0, remaining);
+            input.AsSpan(offset, remaining).CopyTo(lastBlock);
 
         lastBlock[remaining] = domainSuffix;
         lastBlock[blockSize - 1] |= 0x80;
 
-        AbsorbBlock(state, lastBlock, 0, blockSize);
+        AbsorbBlock(state, lastBlock);
         KeccakF1600(state);
 
         // --- Squeeze phase ---
@@ -68,7 +73,7 @@ public static class Keccak
         while (squeezed < outputLength)
         {
             int toCopy = Math.Min(blockSize, outputLength - squeezed);
-            SqueezeBlock(state, output, squeezed, toCopy);
+            SqueezeBlock(state, output.AsSpan(squeezed, toCopy));
             squeezed += toCopy;
             if (squeezed < outputLength)
                 KeccakF1600(state);
@@ -77,39 +82,34 @@ public static class Keccak
         return output;
     }
 
-    private static void AbsorbBlock(ulong[] state, byte[] data, int offset, int length)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void AbsorbBlock(Span<ulong> state, ReadOnlySpan<byte> data)
     {
-        int laneCount = length / 8;
+        int laneCount = data.Length / 8;
         for (int i = 0; i < laneCount; i++)
-        {
-            ulong lane = BitConverter.ToUInt64(data, offset + i * 8);
-            state[i] ^= lane;
-        }
-        // Handle remaining bytes (when length is not a multiple of 8)
-        int tail = length % 8;
+            state[i] ^= BinaryPrimitives.ReadUInt64LittleEndian(data.Slice(i * 8, 8));
+        int tail = data.Length % 8;
         if (tail > 0)
         {
             ulong lane = 0;
-            int baseOff = offset + laneCount * 8;
             for (int b = 0; b < tail; b++)
-                lane |= (ulong)data[baseOff + b] << (8 * b);
+                lane |= (ulong)data[laneCount * 8 + b] << (8 * b);
             state[laneCount] ^= lane;
         }
     }
 
-    private static void SqueezeBlock(ulong[] state, byte[] output, int offset, int length)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void SqueezeBlock(Span<ulong> state, Span<byte> output)
     {
-        int laneCount = length / 8;
+        int laneCount = output.Length / 8;
         for (int i = 0; i < laneCount; i++)
-        {
-            byte[] bytes = BitConverter.GetBytes(state[i]);
-            Buffer.BlockCopy(bytes, 0, output, offset + i * 8, 8);
-        }
-        int tail = length % 8;
+            BinaryPrimitives.WriteUInt64LittleEndian(output.Slice(i * 8, 8), state[i]);
+        int tail = output.Length % 8;
         if (tail > 0)
         {
-            byte[] bytes = BitConverter.GetBytes(state[laneCount]);
-            Buffer.BlockCopy(bytes, 0, output, offset + laneCount * 8, tail);
+            ulong last = state[laneCount];
+            for (int b = 0; b < tail; b++)
+                output[laneCount * 8 + b] = (byte)(last >> (8 * b));
         }
     }
 
@@ -151,10 +151,10 @@ public static class Keccak
          1,  6, 19, 14,  2,
     ];
 
-    private static void KeccakF1600(ulong[] state)
+    private static void KeccakF1600(Span<ulong> state)
     {
-        ulong[] C = new ulong[5];
-        ulong[] temp = new ulong[25];
+        Span<ulong> C = stackalloc ulong[5];
+        Span<ulong> temp = stackalloc ulong[25];
 
         for (int round = 0; round < 24; round++)
         {

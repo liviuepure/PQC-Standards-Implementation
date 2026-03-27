@@ -9,17 +9,25 @@ use subtle::{Choice, ConditionallySelectable, ConstantTimeEq};
 /// The ML-KEM prime modulus q = 3329.
 pub const Q: u16 = 3329;
 
+/// Barrett reduction multiplier for q = 3329.
+/// k = floor(2^24 / q) = floor(16777216 / 3329) = 5039.
+/// For any product p ∈ [0, q²), floor(p * k >> 24) underestimates floor(p / q)
+/// by at most 1, so t = p - q * approx lies in [0, 2q) and one conditional
+/// subtraction brings the result into [0, q).
+const BARRETT_MULTIPLIER: u32 = 5039;
+
 /// An element of the finite field Z_q where q = 3329.
 ///
 /// Values are stored in canonical form in the range [0, q).
 /// All operations maintain this invariant.
 ///
-/// # Constant-Time Guarantees
+/// # Constant-Time Properties
 ///
-/// Equality comparison via `ConstantTimeEq` is constant-time.
-/// Conditional selection via `ConditionallySelectable` is constant-time.
-/// Arithmetic operations (+, -, *) are constant-time as they use only
-/// fixed-sequence arithmetic instructions with no secret-dependent branches.
+/// `ConstantTimeEq` and `ConditionallySelectable` are constant-time via the `subtle` crate.
+/// `Neg` is branchless at the source level: uses only arithmetic, no data-dependent branches.
+/// `Add` and `Sub` use `overflowing_sub` with conditional selection — constant-time in
+/// practice when compiled with LLVM optimizations, but not guaranteed at the source level.
+/// Multiplication uses arithmetic reduction with a final conditional subtraction.
 #[derive(Clone, Copy, Debug)]
 pub struct FieldElement(u16);
 
@@ -103,8 +111,15 @@ impl Mul for FieldElement {
 
     #[inline]
     fn mul(self, rhs: Self) -> Self {
-        let product = self.0 as u32 * rhs.0 as u32;
-        Self::from_u32(product)
+        let p = self.0 as u32 * rhs.0 as u32;
+        // Barrett reduction: approximate p / q without division.
+        // approx = floor(p * k >> 24) ≈ floor(p / q)
+        // Use u64 for the intermediate product to avoid overflow (p*k can exceed u32::MAX).
+        let approx = ((p as u64 * BARRETT_MULTIPLIER as u64) >> 24) as u32;
+        let t = p - (Q as u32) * approx;
+        // t is in [0, 2q). One conditional subtraction to bring into [0, q).
+        let (reduced, underflow) = (t as u16).overflowing_sub(Q);
+        if underflow { Self(t as u16) } else { Self(reduced) }
     }
 }
 
@@ -120,12 +135,12 @@ impl Neg for FieldElement {
 
     #[inline]
     fn neg(self) -> Self {
-        // -0 = 0, -x = Q - x for x in [1, Q-1]
-        if self.0 == 0 {
-            Self::ZERO
-        } else {
-            Self(Q - self.0)
-        }
+        // Branchless negation: (Q - x) % Q.
+        // When x == 0: result = Q % Q = 0. ✓
+        // When x > 0:  result = Q - x ∈ [1, Q-1]. ✓
+        // No secret-dependent branches.
+        let result = (Q as u32).wrapping_sub(self.0 as u32) % (Q as u32);
+        Self(result as u16)
     }
 }
 
@@ -272,6 +287,54 @@ mod tests {
             let a = FieldElement::new(x);
             let neg_a = -a;
             assert_eq!((a + neg_a).value(), 0, "failed for x={x}");
+        }
+    }
+
+    #[test]
+    fn test_neg_zero_branchless() {
+        // -0 must equal 0, not Q
+        let z = FieldElement::ZERO;
+        assert_eq!((-z).value(), 0, "-0 should be 0");
+    }
+
+    #[test]
+    fn test_neg_exhaustive() {
+        // For all x in [0, Q): x + (-x) == 0
+        for x in 0..Q {
+            let a = FieldElement::new(x);
+            let neg_a = -a;
+            // neg_a must be in [0, Q)
+            assert!(neg_a.value() < Q, "neg out of range for x={x}");
+            assert_eq!((a + neg_a).value(), 0, "x + (-x) != 0 for x={x}");
+        }
+    }
+
+    #[test]
+    fn test_mul_barrett_exhaustive() {
+        // Verify Barrett reduction matches naive for all (a, b) ∈ [0, Q)².
+        // ~11M pairs, covers all Barrett approximation error cases near Q.
+        for a in 0u16..Q {
+            for b in 0u16..Q {
+                let got = (FieldElement::new(a) * FieldElement::new(b)).value();
+                let expected = ((a as u32 * b as u32) % Q as u32) as u16;
+                assert_eq!(got, expected, "Barrett error at a={a} b={b}");
+            }
+        }
+    }
+
+    #[test]
+    fn test_mul_barrett_boundary() {
+        // Near-Q values
+        let a = FieldElement::new(Q - 1);
+        let b = FieldElement::new(Q - 1);
+        let got = (a * b).value();
+        let expected = (((Q as u32 - 1) * (Q as u32 - 1)) % Q as u32) as u16;
+        assert_eq!(got, expected, "(Q-1)^2 mod Q");
+
+        // 1 * anything = anything
+        for x in 0..Q {
+            let got = (FieldElement::ONE * FieldElement::new(x)).value();
+            assert_eq!(got, x, "1 * {x}");
         }
     }
 }

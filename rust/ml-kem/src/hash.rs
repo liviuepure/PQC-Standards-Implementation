@@ -30,13 +30,14 @@ pub fn h(input: &[u8]) -> [u8; 32] {
     output
 }
 
-/// J(input) = first 32 bytes of SHAKE-256(input).
+/// J(z || c) = first 32 bytes of SHAKE-256(z || c).
 ///
-/// Used for implicit rejection in Decaps: J(z || c) produces a
-/// pseudorandom shared secret when decapsulation detects tampering.
-pub fn j(input: &[u8]) -> [u8; 32] {
+/// Accepts z and c as separate slices to avoid allocation — the SHAKE sponge
+/// processes them sequentially, equivalent to J(z || c) by definition.
+pub fn j(z: &[u8], c: &[u8]) -> [u8; 32] {
     let mut hasher = Shake256::default();
-    hasher.update(input);
+    hasher.update(z);
+    hasher.update(c);
     let mut reader = hasher.finalize_xof();
     let mut output = [0u8; 32];
     reader.read(&mut output);
@@ -78,9 +79,22 @@ mod tests {
 
     #[test]
     fn test_j_deterministic() {
-        let a = j(b"test");
-        let b = j(b"test");
-        assert_eq!(a, b);
+        let a = j(b"te", b"st");
+        let b_val = j(b"te", b"st");
+        assert_eq!(a, b_val);
+    }
+
+    #[test]
+    fn test_j_split_equals_concat() {
+        // J(a, b) must equal J(concat(a, b), b"") - streaming equivalence
+        let part1 = b"hello";
+        let part2 = b"world";
+        let split = j(part1, part2);
+        let mut combined_input = [0u8; 10];
+        combined_input[..5].copy_from_slice(part1);
+        combined_input[5..].copy_from_slice(part2);
+        let combined = j(&combined_input, b"");
+        assert_eq!(split, combined, "streaming j must equal concat j");
     }
 
     #[test]
@@ -89,7 +103,7 @@ mod tests {
         // (different hash functions)
         let (g_out, _) = g(b"same input");
         let h_out = h(b"same input");
-        let j_out = j(b"same input");
+        let j_out = j(b"same input", b"");
         assert_ne!(g_out, h_out);
         assert_ne!(h_out, j_out);
     }

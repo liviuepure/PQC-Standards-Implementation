@@ -112,7 +112,7 @@ public final class MLKEM {
             }
             // Re-encode and check match
             byte[] reencoded = Encode.byteEncode(12, decoded);
-            if (!Arrays.equals(slice, reencoded)) {
+            if (!constantTimeEquals(slice, reencoded)) {
                 throw new IllegalArgumentException("Invalid ek: re-encoding mismatch at poly " + i);
             }
         }
@@ -123,5 +123,19 @@ public final class MLKEM {
         System.arraycopy(a, 0, result, 0, a.length);
         System.arraycopy(b, 0, result, a.length, b.length);
         return result;
+    }
+
+    /**
+     * Constant-time byte array comparison.
+     * Returns true iff a and b are equal in length and content.
+     * Runs in O(n) time regardless of where the first difference occurs.
+     */
+    private static boolean constantTimeEquals(byte[] a, byte[] b) {
+        if (a.length != b.length) return false;
+        int diff = 0;
+        for (int i = 0; i < a.length; i++) {
+            diff |= (a[i] ^ b[i]);
+        }
+        return diff == 0;
     }
 }

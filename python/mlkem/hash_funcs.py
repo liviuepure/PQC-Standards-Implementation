@@ -2,6 +2,7 @@
 
 Uses Python's hashlib which provides SHA3 and SHAKE in Python 3.10+.
 """
+from __future__ import annotations
 
 import hashlib
 
