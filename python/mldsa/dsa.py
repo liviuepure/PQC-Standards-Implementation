@@ -256,7 +256,10 @@ def verify(pk: bytes, msg: bytes, sig: bytes, params: MLDSAParams) -> bool:
     if len(sig) != params.sig_size:
         return False
 
-    c_tilde, z_signed, hints = decode_sig(sig, params)
+    try:
+        c_tilde, z_signed, hints = decode_sig(sig, params)
+    except (IndexError, ValueError):
+        return False
 
     # Check z infinity norm (z_signed has signed coefficients)
     if _vec_inf_norm(z_signed) >= params.gamma1 - params.beta:
