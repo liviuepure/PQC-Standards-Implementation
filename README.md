@@ -11,17 +11,17 @@ Pure implementations of NIST Post-Quantum Cryptography standards across multiple
 | **FIPS 205** | SLH-DSA (SPHINCS+) | Hash-Based Signature | ✅ All languages |
 | Hybrid KEMs | X25519+ML-KEM-768, ECDH+ML-KEM | Hybrid Key Exchange | ✅ All languages |
 | Composite Sigs | ML-DSA + Ed25519/ECDSA | Hybrid Signatures | ✅ All languages |
-| TLS 1.3 | Integration layer | Protocol Integration | Planned |
+| TLS 1.3 | PQC Named Groups + Cipher Suites | Protocol Integration | ✅ All languages |
 
 ## Languages
 
 | Language | ML-KEM | ML-DSA | SLH-DSA | Hybrid | TLS |
 |----------|--------|--------|---------|--------|-----|
-| Rust     | ✅     | ✅     | ✅      | ✅     | -   |
-| Go       | ✅     | ✅     | ✅      | ✅     | -   |
-| JS/TS    | ✅     | ✅     | ✅      | ✅     | -   |
-| Python   | ✅     | ✅     | ✅      | ✅     | -   |
-| Java     | ✅     | ✅     | ✅      | ✅     | -   |
+| Rust     | ✅     | ✅     | ✅      | ✅     | ✅  |
+| Go       | ✅     | ✅     | ✅      | ✅     | ✅  |
+| JS/TS    | ✅     | ✅     | ✅      | ✅     | ✅  |
+| Python   | ✅     | ✅     | ✅      | ✅     | ✅  |
+| Java     | ✅     | ✅     | ✅      | ✅     | ✅  |
 
 ## ML-KEM — Complete (All Languages)
 
