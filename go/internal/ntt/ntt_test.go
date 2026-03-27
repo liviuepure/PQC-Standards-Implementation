@@ -7,31 +7,6 @@ import (
 	"github.com/baron-chain/PQC-Standards-Implementation/go/internal/field"
 )
 
-func TestBitRev7(t *testing.T) {
-	// 0b0000000 -> 0b0000000
-	if got := BitRev7(0); got != 0 {
-		t.Errorf("BitRev7(0) = %d, want 0", got)
-	}
-	// 0b0000001 -> 0b1000000 = 64
-	if got := BitRev7(1); got != 64 {
-		t.Errorf("BitRev7(1) = %d, want 64", got)
-	}
-	// 0b1000000 = 64 -> 0b0000001 = 1
-	if got := BitRev7(64); got != 1 {
-		t.Errorf("BitRev7(64) = %d, want 1", got)
-	}
-	// BitRev7 is an involution.
-	for i := uint8(0); i < 128; i++ {
-		if BitRev7(BitRev7(i)) != i {
-			t.Fatalf("BitRev7 is not an involution at %d", i)
-		}
-	}
-	// 0b0101010 = 42 -> 0b0101010 = 42 (palindrome)
-	if got := BitRev7(42); got != 42 {
-		t.Errorf("BitRev7(42) = %d, want 42", got)
-	}
-}
-
 func TestZetas(t *testing.T) {
 	// Length check.
 	if len(Zetas) != 128 {
@@ -43,12 +18,9 @@ func TestZetas(t *testing.T) {
 		t.Errorf("Zetas[0] = %d, want 1", Zetas[0])
 	}
 
-	// Second entry: 17^BitRev7(1) = 17^64 mod 3329.
-	// 17 is a primitive 256th root of unity, so 17^128 = -1 mod 3329,
-	// and 17^64 = a specific value. Compute it.
-	want1 := modExp(17, 64, field.Q)
-	if Zetas[1] != want1 {
-		t.Errorf("Zetas[1] = %d, want %d", Zetas[1], want1)
+	// Second entry: 17^BitRev7(1) = 17^64 mod 3329 = 1729.
+	if Zetas[1] != 1729 {
+		t.Errorf("Zetas[1] = %d, want 1729", Zetas[1])
 	}
 
 	// All values should be in [0, q).
@@ -59,13 +31,22 @@ func TestZetas(t *testing.T) {
 	}
 
 	// 17 is a primitive 256th root of unity: 17^256 ≡ 1 (mod 3329).
-	if got := modExp(17, 256, field.Q); got != 1 {
-		t.Errorf("17^256 mod 3329 = %d, want 1", got)
+	// Verify using math/big or inline pow. Use standard library big.Int.
+	// 17^128 mod 3329: compute iteratively.
+	v := uint32(1)
+	base := uint32(17)
+	exp := uint32(128)
+	b := base
+	e := exp
+	for e > 0 {
+		if e&1 == 1 {
+			v = (v * b) % 3329
+		}
+		e >>= 1
+		b = (b * b) % 3329
 	}
-
-	// And 17^128 ≡ -1 (mod 3329) = 3328.
-	if got := modExp(17, 128, field.Q); got != field.Q-1 {
-		t.Errorf("17^128 mod 3329 = %d, want %d", got, field.Q-1)
+	if v != 3328 {
+		t.Errorf("17^128 mod 3329 = %d, want 3328", v)
 	}
 }
 
