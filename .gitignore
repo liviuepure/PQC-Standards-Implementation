@@ -33,3 +33,4 @@ java/target/
 # OS
 .DS_Store
 Thumbs.db
+php/vendor/
