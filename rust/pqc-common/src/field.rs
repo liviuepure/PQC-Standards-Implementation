@@ -10,8 +10,10 @@ use subtle::{Choice, ConditionallySelectable, ConstantTimeEq};
 pub const Q: u16 = 3329;
 
 /// Barrett reduction multiplier for q = 3329.
-/// Computed as floor(2^24 / q) = 5039.
-/// Reduces products p < q^2 < 2^24 exactly in one pass.
+/// k = floor(2^24 / q) = floor(16777216 / 3329) = 5039.
+/// For any product p ∈ [0, q²), floor(p * k >> 24) underestimates floor(p / q)
+/// by at most 1, so t = p - q * approx lies in [0, 2q) and one conditional
+/// subtraction brings the result into [0, q).
 const BARRETT_MULTIPLIER: u32 = 5039;
 
 /// An element of the finite field Z_q where q = 3329.
@@ -308,13 +310,14 @@ mod tests {
     }
 
     #[test]
-    fn test_mul_barrett_exhaustive_small() {
-        // Verify Barrett matches naive for all a,b in [0, 100)
-        for a in 0u16..100 {
-            for b in 0u16..100 {
+    fn test_mul_barrett_exhaustive() {
+        // Verify Barrett reduction matches naive for all (a, b) ∈ [0, Q)².
+        // ~11M pairs, covers all Barrett approximation error cases near Q.
+        for a in 0u16..Q {
+            for b in 0u16..Q {
                 let got = (FieldElement::new(a) * FieldElement::new(b)).value();
                 let expected = ((a as u32 * b as u32) % Q as u32) as u16;
-                assert_eq!(got, expected, "a={a} b={b}");
+                assert_eq!(got, expected, "Barrett error at a={a} b={b}");
             }
         }
     }
