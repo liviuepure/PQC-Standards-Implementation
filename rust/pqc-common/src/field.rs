@@ -120,12 +120,12 @@ impl Neg for FieldElement {
 
     #[inline]
     fn neg(self) -> Self {
-        // -0 = 0, -x = Q - x for x in [1, Q-1]
-        if self.0 == 0 {
-            Self::ZERO
-        } else {
-            Self(Q - self.0)
-        }
+        // Branchless negation: (Q - x) % Q.
+        // When x == 0: result = Q % Q = 0. ✓
+        // When x > 0:  result = Q - x ∈ [1, Q-1]. ✓
+        // No secret-dependent branches.
+        let result = (Q as u32).wrapping_sub(self.0 as u32) % Q as u32;
+        Self(result as u16)
     }
 }
 
@@ -272,6 +272,25 @@ mod tests {
             let a = FieldElement::new(x);
             let neg_a = -a;
             assert_eq!((a + neg_a).value(), 0, "failed for x={x}");
+        }
+    }
+
+    #[test]
+    fn test_neg_zero_branchless() {
+        // -0 must equal 0, not Q
+        let z = FieldElement::ZERO;
+        assert_eq!((-z).value(), 0, "-0 should be 0");
+    }
+
+    #[test]
+    fn test_neg_exhaustive() {
+        // For all x in [0, Q): x + (-x) == 0
+        for x in 0..Q {
+            let a = FieldElement::new(x);
+            let neg_a = -a;
+            // neg_a must be in [0, Q)
+            assert!(neg_a.value() < Q, "neg out of range for x={x}");
+            assert_eq!((a + neg_a).value(), 0, "x + (-x) != 0 for x={x}");
         }
     }
 }
