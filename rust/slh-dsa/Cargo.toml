@@ -10,6 +10,7 @@ sha2 = { version = "0.10", default-features = false }
 sha3 = { version = "0.10", default-features = false }
 hmac = { version = "0.12", default-features = false }
 rand_core = { version = "0.6", default-features = false }
+zeroize = { version = "1.8", default-features = false, features = ["zeroize_derive"], optional = true }
 
 [dev-dependencies]
 rand = "0.8"
@@ -17,8 +18,9 @@ hex = "0.4"
 criterion = { version = "0.5", features = ["html_reports"] }
 
 [features]
-default = []
+default = ["zeroize"]
 std = ["sha2/std", "sha3/std"]
+zeroize = ["dep:zeroize"]
 
 [[bench]]
 name = "slh_dsa_bench"

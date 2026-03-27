@@ -24,7 +24,7 @@ hex = { workspace = true }
 rand = { workspace = true }
 
 [features]
-default = ["alloc"]
+default = ["alloc", "zeroize"]
 std = ["alloc", "pqc-common/std", "sha3/std", "subtle/std", "rand_core/std"]
 alloc = []
 zeroize = ["dep:zeroize", "pqc-common/zeroize"]
