@@ -100,10 +100,7 @@ pub fn decapsulate<P: ParameterSet>(dk: &[u8], ct: &[u8]) -> [u8; 32] {
     let (k_prime, r_prime) = g(&g_input);
 
     // Implicit rejection key: K_bar = J(z || c)
-    let mut j_input = Vec::with_capacity(32 + ct.len());
-    j_input.extend_from_slice(z);
-    j_input.extend_from_slice(ct);
-    let k_bar = j(&j_input);
+    let k_bar = j(z, ct);
 
     // Re-encrypt and compare (constant-time)
     let ct_prime = kpke_encrypt::<P>(ek_pke, &m_prime, &r_prime);
