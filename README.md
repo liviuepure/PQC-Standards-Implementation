@@ -22,6 +22,9 @@ Pure implementations of NIST Post-Quantum Cryptography standards across multiple
 | JS/TS    | ✅     | ✅     | ✅      | ✅     | ✅  |
 | Python   | ✅     | ✅     | ✅      | ✅     | ✅  |
 | Java     | ✅     | ✅     | ✅      | ✅     | ✅  |
+| C#/.NET  | ✅     | ✅     | ✅      | ✅     | ✅  |
+| Swift    | ✅     | ✅     | ✅      | ✅     | ✅  |
+| PHP      | ✅     | ✅     | ✅      | ✅     | ✅  |
 
 ## ML-KEM — Complete (All Languages)
 
@@ -52,11 +55,18 @@ PQC-Standards-Implementation/
 ├── rust/           # Rust implementations
 │   ├── pqc-common/ # Shared field arithmetic
 │   ├── ml-kem/     # ML-KEM (FIPS 203)
-│   └── ml-dsa/     # ML-DSA (FIPS 204)
+│   ├── ml-dsa/     # ML-DSA (FIPS 204)
+│   ├── slh-dsa/    # SLH-DSA (FIPS 205)
+│   ├── hybrid-kem/ # Hybrid KEMs
+│   ├── composite-sig/ # Composite Signatures
+│   └── pqc-tls/    # TLS 1.3 Integration
 ├── go/             # Go implementations
 ├── js/             # JavaScript (ES modules, Node.js 20+)
 ├── python/         # Python implementations (3.10+)
 ├── java/           # Java implementations (17+, Maven)
+├── dotnet/         # C#/.NET implementations (10+)
+├── swift/          # Swift implementations (5.9+, CryptoKit)
+├── php/            # PHP implementations (8.1+)
 └── test-vectors/   # Shared NIST KAT vectors
 ```
 
