@@ -1,3 +1,4 @@
+#![forbid(unsafe_code)]
 //! ML-DSA (FIPS 204) — Module-Lattice-Based Digital Signature Algorithm.
 //!
 //! This crate provides a pure Rust implementation of ML-DSA, the NIST
