@@ -14,12 +14,13 @@ pub const Q: u16 = 3329;
 /// Values are stored in canonical form in the range [0, q).
 /// All operations maintain this invariant.
 ///
-/// # Constant-Time Guarantees
+/// # Constant-Time Properties
 ///
-/// Equality comparison via `ConstantTimeEq` is constant-time.
-/// Conditional selection via `ConditionallySelectable` is constant-time.
-/// Arithmetic operations (+, -, *) are constant-time as they use only
-/// fixed-sequence arithmetic instructions with no secret-dependent branches.
+/// `ConstantTimeEq` and `ConditionallySelectable` are constant-time via the `subtle` crate.
+/// `Neg` is branchless at the source level: uses only arithmetic, no data-dependent branches.
+/// `Add` and `Sub` use `overflowing_sub` with conditional selection — constant-time in
+/// practice when compiled with LLVM optimizations, but not guaranteed at the source level.
+/// Multiplication uses arithmetic reduction with a final conditional subtraction.
 #[derive(Clone, Copy, Debug)]
 pub struct FieldElement(u16);
 
@@ -124,7 +125,7 @@ impl Neg for FieldElement {
         // When x == 0: result = Q % Q = 0. ✓
         // When x > 0:  result = Q - x ∈ [1, Q-1]. ✓
         // No secret-dependent branches.
-        let result = (Q as u32).wrapping_sub(self.0 as u32) % Q as u32;
+        let result = (Q as u32).wrapping_sub(self.0 as u32) % (Q as u32);
         Self(result as u16)
     }
 }
