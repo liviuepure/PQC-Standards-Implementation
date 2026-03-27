@@ -9,6 +9,11 @@ use subtle::{Choice, ConditionallySelectable, ConstantTimeEq};
 /// The ML-KEM prime modulus q = 3329.
 pub const Q: u16 = 3329;
 
+/// Barrett reduction multiplier for q = 3329.
+/// Computed as floor(2^24 / q) = 5039.
+/// Reduces products p < q^2 < 2^24 exactly in one pass.
+const BARRETT_MULTIPLIER: u32 = 5039;
+
 /// An element of the finite field Z_q where q = 3329.
 ///
 /// Values are stored in canonical form in the range [0, q).
@@ -104,8 +109,15 @@ impl Mul for FieldElement {
 
     #[inline]
     fn mul(self, rhs: Self) -> Self {
-        let product = self.0 as u32 * rhs.0 as u32;
-        Self::from_u32(product)
+        let p = self.0 as u32 * rhs.0 as u32;
+        // Barrett reduction: approximate p / q without division.
+        // approx = floor(p * k >> 24) ≈ floor(p / q)
+        // Use u64 for the intermediate product to avoid overflow (p*k can exceed u32::MAX).
+        let approx = ((p as u64 * BARRETT_MULTIPLIER as u64) >> 24) as u32;
+        let t = p - (Q as u32) * approx;
+        // t is in [0, 2q). One conditional subtraction to bring into [0, q).
+        let (reduced, underflow) = (t as u16).overflowing_sub(Q);
+        if underflow { Self(t as u16) } else { Self(reduced) }
     }
 }
 
@@ -292,6 +304,34 @@ mod tests {
             // neg_a must be in [0, Q)
             assert!(neg_a.value() < Q, "neg out of range for x={x}");
             assert_eq!((a + neg_a).value(), 0, "x + (-x) != 0 for x={x}");
+        }
+    }
+
+    #[test]
+    fn test_mul_barrett_exhaustive_small() {
+        // Verify Barrett matches naive for all a,b in [0, 100)
+        for a in 0u16..100 {
+            for b in 0u16..100 {
+                let got = (FieldElement::new(a) * FieldElement::new(b)).value();
+                let expected = ((a as u32 * b as u32) % Q as u32) as u16;
+                assert_eq!(got, expected, "a={a} b={b}");
+            }
+        }
+    }
+
+    #[test]
+    fn test_mul_barrett_boundary() {
+        // Near-Q values
+        let a = FieldElement::new(Q - 1);
+        let b = FieldElement::new(Q - 1);
+        let got = (a * b).value();
+        let expected = (((Q as u32 - 1) * (Q as u32 - 1)) % Q as u32) as u16;
+        assert_eq!(got, expected, "(Q-1)^2 mod Q");
+
+        // 1 * anything = anything
+        for x in 0..Q {
+            let got = (FieldElement::ONE * FieldElement::new(x)).value();
+            assert_eq!(got, x, "1 * {x}");
         }
     }
 }
