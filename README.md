@@ -70,6 +70,18 @@ PQC-Standards-Implementation/
 └── test-vectors/   # Shared NIST KAT vectors
 ```
 
+## Documentation
+
+See the **[Implementation Manual](MANUAL.md)** for:
+- Quick start examples in all 8 languages
+- Complete API reference for every component
+- Parameter set selection guide
+- Security considerations and best practices
+- Migration guide from RSA/ECDH/ECDSA
+- Building, testing, and integration instructions
+- Performance benchmarks
+- FAQ
+
 ## Security
 
 - Constant-time operations (no secret-dependent branches)
