@@ -1,0 +1,3 @@
+module PQCStandards {
+    header "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/include/PQCStandards-Swift.h"
+}

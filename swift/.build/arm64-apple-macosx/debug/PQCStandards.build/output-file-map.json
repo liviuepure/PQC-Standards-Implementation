@@ -1,0 +1,208 @@
+{
+  "": {
+    "swift-dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/primary.swiftdeps"
+  },
+  "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/Sources/PQCStandards/Composite/CompositeSig.swift": {
+    "dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/CompositeSig.d",
+    "object": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/CompositeSig.swift.o",
+    "swiftmodule": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/CompositeSig~partial.swiftmodule",
+    "swift-dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/CompositeSig.swiftdeps",
+    "diagnostics": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/CompositeSig.dia"
+  },
+  "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/Sources/PQCStandards/Hybrid/HybridKem.swift": {
+    "dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/HybridKem.d",
+    "object": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/HybridKem.swift.o",
+    "swiftmodule": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/HybridKem~partial.swiftmodule",
+    "swift-dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/HybridKem.swiftdeps",
+    "diagnostics": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/HybridKem.dia"
+  },
+  "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/Sources/PQCStandards/MlDsa/Decompose.swift": {
+    "dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Decompose.d",
+    "object": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Decompose.swift.o",
+    "swiftmodule": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Decompose~partial.swiftmodule",
+    "swift-dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Decompose.swiftdeps",
+    "diagnostics": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Decompose.dia"
+  },
+  "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/Sources/PQCStandards/MlDsa/DsaEncode.swift": {
+    "dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/DsaEncode.d",
+    "object": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/DsaEncode.swift.o",
+    "swiftmodule": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/DsaEncode~partial.swiftmodule",
+    "swift-dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/DsaEncode.swiftdeps",
+    "diagnostics": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/DsaEncode.dia"
+  },
+  "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/Sources/PQCStandards/MlDsa/DsaField.swift": {
+    "dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/DsaField.d",
+    "object": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/DsaField.swift.o",
+    "swiftmodule": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/DsaField~partial.swiftmodule",
+    "swift-dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/DsaField.swiftdeps",
+    "diagnostics": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/DsaField.dia"
+  },
+  "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/Sources/PQCStandards/MlDsa/DsaHash.swift": {
+    "dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/DsaHash.d",
+    "object": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/DsaHash.swift.o",
+    "swiftmodule": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/DsaHash~partial.swiftmodule",
+    "swift-dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/DsaHash.swiftdeps",
+    "diagnostics": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/DsaHash.dia"
+  },
+  "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/Sources/PQCStandards/MlDsa/DsaNtt.swift": {
+    "dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/DsaNtt.d",
+    "object": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/DsaNtt.swift.o",
+    "swiftmodule": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/DsaNtt~partial.swiftmodule",
+    "swift-dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/DsaNtt.swiftdeps",
+    "diagnostics": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/DsaNtt.dia"
+  },
+  "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/Sources/PQCStandards/MlDsa/DsaParams.swift": {
+    "dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/DsaParams.d",
+    "object": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/DsaParams.swift.o",
+    "swiftmodule": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/DsaParams~partial.swiftmodule",
+    "swift-dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/DsaParams.swiftdeps",
+    "diagnostics": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/DsaParams.dia"
+  },
+  "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/Sources/PQCStandards/MlDsa/MlDsa.swift": {
+    "dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/MlDsa.d",
+    "object": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/MlDsa.swift.o",
+    "swiftmodule": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/MlDsa~partial.swiftmodule",
+    "swift-dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/MlDsa.swiftdeps",
+    "diagnostics": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/MlDsa.dia"
+  },
+  "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/Sources/PQCStandards/MlKem/Compress.swift": {
+    "dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Compress.d",
+    "object": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Compress.swift.o",
+    "swiftmodule": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Compress~partial.swiftmodule",
+    "swift-dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Compress.swiftdeps",
+    "diagnostics": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Compress.dia"
+  },
+  "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/Sources/PQCStandards/MlKem/Encode.swift": {
+    "dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Encode.d",
+    "object": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Encode.swift.o",
+    "swiftmodule": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Encode~partial.swiftmodule",
+    "swift-dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Encode.swiftdeps",
+    "diagnostics": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Encode.dia"
+  },
+  "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/Sources/PQCStandards/MlKem/Field.swift": {
+    "dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Field.d",
+    "object": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Field.swift.o",
+    "swiftmodule": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Field~partial.swiftmodule",
+    "swift-dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Field.swiftdeps",
+    "diagnostics": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Field.dia"
+  },
+  "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/Sources/PQCStandards/MlKem/HashFuncs.swift": {
+    "dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/HashFuncs.d",
+    "object": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/HashFuncs.swift.o",
+    "swiftmodule": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/HashFuncs~partial.swiftmodule",
+    "swift-dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/HashFuncs.swiftdeps",
+    "diagnostics": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/HashFuncs.dia"
+  },
+  "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/Sources/PQCStandards/MlKem/Kpke.swift": {
+    "dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Kpke.d",
+    "object": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Kpke.swift.o",
+    "swiftmodule": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Kpke~partial.swiftmodule",
+    "swift-dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Kpke.swiftdeps",
+    "diagnostics": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Kpke.dia"
+  },
+  "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/Sources/PQCStandards/MlKem/MlKem.swift": {
+    "dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/MlKem.d",
+    "object": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/MlKem.swift.o",
+    "swiftmodule": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/MlKem~partial.swiftmodule",
+    "swift-dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/MlKem.swiftdeps",
+    "diagnostics": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/MlKem.dia"
+  },
+  "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/Sources/PQCStandards/MlKem/Ntt.swift": {
+    "dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Ntt.d",
+    "object": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Ntt.swift.o",
+    "swiftmodule": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Ntt~partial.swiftmodule",
+    "swift-dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Ntt.swiftdeps",
+    "diagnostics": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Ntt.dia"
+  },
+  "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/Sources/PQCStandards/MlKem/Params.swift": {
+    "dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Params.d",
+    "object": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Params.swift.o",
+    "swiftmodule": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Params~partial.swiftmodule",
+    "swift-dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Params.swiftdeps",
+    "diagnostics": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Params.dia"
+  },
+  "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/Sources/PQCStandards/MlKem/Sampling.swift": {
+    "dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Sampling.d",
+    "object": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Sampling.swift.o",
+    "swiftmodule": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Sampling~partial.swiftmodule",
+    "swift-dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Sampling.swiftdeps",
+    "diagnostics": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Sampling.dia"
+  },
+  "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/Sources/PQCStandards/SlhDsa/Address.swift": {
+    "dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Address.d",
+    "object": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Address.swift.o",
+    "swiftmodule": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Address~partial.swiftmodule",
+    "swift-dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Address.swiftdeps",
+    "diagnostics": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Address.dia"
+  },
+  "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/Sources/PQCStandards/SlhDsa/Fors.swift": {
+    "dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Fors.d",
+    "object": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Fors.swift.o",
+    "swiftmodule": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Fors~partial.swiftmodule",
+    "swift-dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Fors.swiftdeps",
+    "diagnostics": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Fors.dia"
+  },
+  "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/Sources/PQCStandards/SlhDsa/Hypertree.swift": {
+    "dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Hypertree.d",
+    "object": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Hypertree.swift.o",
+    "swiftmodule": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Hypertree~partial.swiftmodule",
+    "swift-dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Hypertree.swiftdeps",
+    "diagnostics": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Hypertree.dia"
+  },
+  "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/Sources/PQCStandards/SlhDsa/SlhDsa.swift": {
+    "dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/SlhDsa.d",
+    "object": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/SlhDsa.swift.o",
+    "swiftmodule": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/SlhDsa~partial.swiftmodule",
+    "swift-dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/SlhDsa.swiftdeps",
+    "diagnostics": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/SlhDsa.dia"
+  },
+  "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/Sources/PQCStandards/SlhDsa/SlhHash.swift": {
+    "dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/SlhHash.d",
+    "object": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/SlhHash.swift.o",
+    "swiftmodule": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/SlhHash~partial.swiftmodule",
+    "swift-dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/SlhHash.swiftdeps",
+    "diagnostics": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/SlhHash.dia"
+  },
+  "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/Sources/PQCStandards/SlhDsa/SlhParams.swift": {
+    "dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/SlhParams.d",
+    "object": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/SlhParams.swift.o",
+    "swiftmodule": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/SlhParams~partial.swiftmodule",
+    "swift-dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/SlhParams.swiftdeps",
+    "diagnostics": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/SlhParams.dia"
+  },
+  "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/Sources/PQCStandards/SlhDsa/Wots.swift": {
+    "dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Wots.d",
+    "object": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Wots.swift.o",
+    "swiftmodule": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Wots~partial.swiftmodule",
+    "swift-dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Wots.swiftdeps",
+    "diagnostics": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Wots.dia"
+  },
+  "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/Sources/PQCStandards/SlhDsa/Xmss.swift": {
+    "dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Xmss.d",
+    "object": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Xmss.swift.o",
+    "swiftmodule": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Xmss~partial.swiftmodule",
+    "swift-dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Xmss.swiftdeps",
+    "diagnostics": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/Xmss.dia"
+  },
+  "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/Sources/PQCStandards/Tls/CipherSuites.swift": {
+    "dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/CipherSuites.d",
+    "object": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/CipherSuites.swift.o",
+    "swiftmodule": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/CipherSuites~partial.swiftmodule",
+    "swift-dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/CipherSuites.swiftdeps",
+    "diagnostics": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/CipherSuites.dia"
+  },
+  "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/Sources/PQCStandards/Tls/NamedGroups.swift": {
+    "dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/NamedGroups.d",
+    "object": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/NamedGroups.swift.o",
+    "swiftmodule": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/NamedGroups~partial.swiftmodule",
+    "swift-dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/NamedGroups.swiftdeps",
+    "diagnostics": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/NamedGroups.dia"
+  },
+  "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/Sources/PQCStandards/Tls/SigAlgorithms.swift": {
+    "dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/SigAlgorithms.d",
+    "object": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/SigAlgorithms.swift.o",
+    "swiftmodule": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/SigAlgorithms~partial.swiftmodule",
+    "swift-dependencies": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/SigAlgorithms.swiftdeps",
+    "diagnostics": "/Users/liviu/Development/GIT/PQC-Standards-Implementation/swift/.build/arm64-apple-macosx/debug/PQCStandards.build/SigAlgorithms.dia"
+  }
+}
