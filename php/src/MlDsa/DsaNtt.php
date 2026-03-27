@@ -80,16 +80,17 @@ final class DsaNtt
     public static function invNtt(array $f): array
     {
         $zetas = self::getZetas();
-        $k = 255;
+        $k = 256;
         $len = 1;
 
         while ($len <= 128) {
             for ($start = 0; $start < 256; $start += 2 * $len) {
-                $z = $zetas[$k--];
+                $k--;
+                $z = $zetas[$k];
                 for ($j = $start; $j < $start + $len; $j++) {
                     $t = $f[$j];
                     $f[$j] = DsaField::add($t, $f[$j + $len]);
-                    $f[$j + $len] = DsaField::mul($z, DsaField::sub($t, $f[$j + $len]));
+                    $f[$j + $len] = DsaField::mul($z, DsaField::sub($f[$j + $len], $t));
                 }
             }
             $len <<= 1;

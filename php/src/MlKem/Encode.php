@@ -110,8 +110,8 @@ final class Encode
             $b0 = ord($b[$idx]);
             $b1 = ord($b[$idx + 1]);
             $b2 = ord($b[$idx + 2]);
-            $f[$i] = ($b0 | (($b1 & 0x0F) << 8)) % Field::Q;
-            $f[$i + 1] = ((($b1 >> 4) | ($b2 << 4))) % Field::Q;
+            $f[$i] = $b0 | (($b1 & 0x0F) << 8);
+            $f[$i + 1] = ($b1 >> 4) | ($b2 << 4);
         }
         return $f;
     }

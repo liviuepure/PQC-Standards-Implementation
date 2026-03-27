@@ -95,8 +95,8 @@ final class Ntt
             $len <<= 1;
         }
 
-        // Multiply by n^{-1} mod q = 3303
-        $nInv = Field::inv(256); // 256^{-1} mod 3329 = 3303
+        // Multiply by 128^{-1} mod q (7-layer NTT for ML-KEM)
+        $nInv = Field::inv(128);
         for ($i = 0; $i < 256; $i++) {
             $f[$i] = Field::mul($f[$i], $nInv);
         }
