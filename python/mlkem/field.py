@@ -1,4 +1,5 @@
 """Finite field arithmetic modulo Q = 3329."""
+from __future__ import annotations
 
 Q = 3329
 

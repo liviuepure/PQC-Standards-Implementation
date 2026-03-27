@@ -2,6 +2,7 @@
 
 Implements Algorithms 9-12.
 """
+from __future__ import annotations
 
 from mlkem.field import Q, mod_q, field_mul, field_sub, field_add
 
