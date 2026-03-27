@@ -5,6 +5,8 @@ members = [
     "ml-kem",
     "ml-dsa",
     "slh-dsa",
+    "composite-sig",
+    "hybrid-kem",
 ]
 
 [workspace.package]

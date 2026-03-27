@@ -1,0 +1,17 @@
+[package]
+name = "composite-sig"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "Composite signature schemes combining ML-DSA with classical signatures (Ed25519, ECDSA-P256)"
+
+[dependencies]
+ml-dsa = { path = "../ml-dsa" }
+ed25519-dalek = { version = "2", features = ["rand_core"] }
+p256 = { version = "0.13", features = ["ecdsa"] }
+rand_core = { version = "0.6", default-features = false }
+sha2 = { version = "0.10" }
+signature = "2"
+
+[dev-dependencies]
+rand = "0.8"
