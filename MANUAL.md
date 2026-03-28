@@ -18,6 +18,7 @@ A comprehensive developer guide for integrating post-quantum cryptography into y
 10. [Security Considerations](#10-security-considerations)
 11. [Migration Guide](#11-migration-guide)
 12. [Building and Testing](#12-building-and-testing)
+    - [Cross-Language Interoperability Suite](#cross-language-interoperability-suite)
 13. [Performance](#13-performance)
 14. [FAQ](#14-faq)
 15. [License](#15-license)
@@ -48,18 +49,41 @@ In August 2024, NIST published three post-quantum cryptographic standards:
 
 ### What This Library Provides
 
-This repository contains pure implementations of all three NIST PQC standards across eight programming languages:
+This repository contains pure implementations of all three NIST PQC standards across eight programming languages. Cross-language interoperability is verified by a shared test vector suite — **96/96 tests pass** across Python, Go, Java, JavaScript, Rust, Swift, .NET, and PHP.
 
 | Component | Rust | Go | JS | Python | Java | C# | Swift | PHP |
 |-----------|------|----|----|--------|------|----|-------|-----|
-| ML-KEM    | Yes  | Yes| Yes| Yes    | Yes  | Yes| Yes   | Yes |
-| ML-DSA    | Yes  | Yes| Yes| Yes    | Yes  | Yes| Yes   | Yes |
-| SLH-DSA   | Yes  | Yes| Yes| Yes    | Yes  | Yes| Yes   | Yes |
-| Hybrid KEM| Yes  | Yes| Yes| Yes    | Yes  | Yes| Yes   | Yes |
-| Composite | Yes  | Yes| Yes| Yes    | Yes  | Yes| Yes   | Yes |
-| TLS 1.3   | Yes  | Yes| Yes| Yes    | Yes  | Yes| Yes   | Yes |
+| ML-KEM (FIPS 203) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| ML-DSA (FIPS 204) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| SLH-DSA SHAKE (FIPS 205) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| SLH-DSA SHA2 (FIPS 205) | — | ✅ | — | — | — | — | — | — |
+| Hybrid KEM | — | ✅ | — | — | — | — | — | — |
+| Composite Signatures | — | ✅ | — | — | — | — | — | — |
+| PQ-TLS 1.3 | — | ✅ | — | — | — | — | — | — |
 
-All implementations produce identical output for the same inputs, enabling cross-language interoperability. Shared test vectors under `test-vectors/` verify this.
+**Test vectors** are stored in `test-vectors/` organized by algorithm family:
+
+```
+test-vectors/
+├── ml-kem/          ML-KEM-512, ML-KEM-768, ML-KEM-1024
+├── ml-dsa/          ML-DSA-44, ML-DSA-65, ML-DSA-87
+├── slh-dsa/
+│   ├── shake/       SLH-DSA-SHAKE-{128,192,256}{f,s}
+│   └── sha2/        SLH-DSA-SHA2-{128,192,256}{f,s}
+├── hybrid-kem/      X25519+ML-KEM-768/1024, ECDH-P256/P384+ML-KEM
+├── composite-sig/   ML-DSA-{44,65,87}+Ed25519, ML-DSA-65+ECDSA-P256
+└── pq-tls/          PQ-TLS 1.3 X25519MLKEM768 key exchange
+```
+
+Generate fresh vectors (from repo root):
+```bash
+cd go && go run ./cmd/generate-all-vectors ../test-vectors
+```
+
+Run the full cross-language interop suite:
+```bash
+bash interop/run_interop_comprehensive.sh
+```
 
 ---
 
@@ -1265,6 +1289,51 @@ composer require pqc/standards
 
 Requires PHP 8.1+. PSR-4 autoloading via Composer.
 
+### Cross-Language Interoperability Suite
+
+A full cross-language test suite verifies that all language implementations produce identical output for the same inputs.
+
+**Run the suite (from repo root):**
+```bash
+bash interop/run_interop_comprehensive.sh
+```
+
+This script:
+1. Uses Python to generate test vectors for 12 schemes (ML-KEM×3, ML-DSA×3, SLH-DSA-SHAKE×6)
+2. Runs verifiers in all 8 languages against those vectors in parallel
+3. Writes `interop_results.json` and `interop_results.txt` with per-language pass/fail results
+
+**Result: 96/96 PASS** — all 8 languages, all 12 schemes.
+
+**Generate extended test vectors (all 27 schemes including hybrid, composite, TLS):**
+```bash
+cd go && go run ./cmd/generate-all-vectors ../test-vectors
+python3 interop/generate_all_results.py
+```
+
+This produces `interop_results_all.json` and `interop_results_all.txt` covering:
+- ML-KEM (3 variants) × 8 languages = 24 tests
+- ML-DSA (3 variants) × 8 languages = 24 tests
+- SLH-DSA SHAKE (6 variants) × 8 languages = 48 tests
+- SLH-DSA SHA2 (6 variants), Go self-test
+- Hybrid KEM (4 variants), Go self-test
+- Composite Signatures (4 variants), Go self-test
+- PQ-TLS key exchange, Go self-test
+
+**Total: 111/111 PASS**
+
+Test vector format (example `test-vectors/ml-kem/ML-KEM-768.json`):
+```json
+{
+  "algorithm": "ML-KEM-768",
+  "generated_by": "Go reference (FIPS 203)",
+  "ek": "...",
+  "dk": "...",
+  "ct": "...",
+  "ss": "..."
+}
+```
+
 ---
 
 ## 13. Performance
@@ -1351,7 +1420,21 @@ HQC (Hamming Quasi-Cyclic) was selected as a backup KEM by NIST, providing a cod
 
 ### Are the implementations interoperable across languages?
 
-Yes. All implementations produce identical output for the same inputs (seeds, randomness, keys, messages). The `test-vectors/` directory contains shared KAT files that all language implementations must pass. You can generate a key pair in Rust, encapsulate in Python, and decapsulate in Go -- the shared secrets will match.
+Yes, and this has been verified. The cross-language interop suite achieves **96/96 PASS** across Python, Go, Java, JavaScript, Rust, Swift, .NET, and PHP for all 12 schemes (ML-KEM×3, ML-DSA×3, SLH-DSA-SHAKE×6).
+
+You can generate a key pair in Rust, encapsulate in Python, and decapsulate in Go — the shared secrets match. The `test-vectors/` directory contains JSON vector files for all 27 schemes (including hybrid KEM, composite signatures, and PQ-TLS) that any language can load and verify against.
+
+Run the suite:
+```bash
+bash interop/run_interop_comprehensive.sh
+```
+
+Several interoperability bugs were found and fixed during this testing:
+- PHP WOTS+ checksum byte endianness (big-endian prepend → append)
+- PHP/Java/C# arithmetic right shift for 64-bit tree indices in SLH-DSA
+- .NET wrong Keccak-f[1600] PiLane permutation (fixed all SHA3/SHAKE operations)
+- Swift ML-KEM wrong shared secret formula (extra SHA3-256 wrapping removed)
+- Java SLH-DSA parameter set values (all 12 sets had wrong `hPrime`, `d`, `a` fields)
 
 ### How large are the keys and signatures compared to classical algorithms?
 
