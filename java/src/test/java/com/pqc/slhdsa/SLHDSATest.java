@@ -95,14 +95,14 @@ class SLHDSATest {
 
     @Test
     void testParameterSetSizes() {
-        // Verify expected sizes for SHAKE-128f per FIPS 205
+        // Verify expected sizes for SHAKE-128f per FIPS 205 Table 1
         SlhParams p = SlhParams.SHAKE_128F;
         assertEquals(16, p.n);
         assertEquals(16, p.w);
-        assertEquals(7, p.hPrime);
-        assertEquals(12, p.d);
-        assertEquals(84, p.h);  // 7 * 12
-        assertEquals(14, p.a);
+        assertEquals(3,  p.hPrime);
+        assertEquals(22, p.d);
+        assertEquals(66, p.h);  // 3 * 22
+        assertEquals(6,  p.a);
         assertEquals(33, p.k);
     }
 
