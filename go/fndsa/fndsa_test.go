@@ -16,17 +16,19 @@ func TestParamSizes(t *testing.T) {
 		{FNDSAPadded1024, 1024, 1793, 2305, 1473},
 	}
 	for _, tc := range cases {
-		if tc.p.N != tc.n {
-			t.Errorf("%s: N=%d want %d", tc.p.Name, tc.p.N, tc.n)
-		}
-		if tc.p.PKSize != tc.pkBytes {
-			t.Errorf("%s: PKSize=%d want %d", tc.p.Name, tc.p.PKSize, tc.pkBytes)
-		}
-		if tc.p.SKSize != tc.skBytes {
-			t.Errorf("%s: SKSize=%d want %d", tc.p.Name, tc.p.SKSize, tc.skBytes)
-		}
-		if tc.p.SigSize != tc.sigBytes {
-			t.Errorf("%s: SigSize=%d want %d", tc.p.Name, tc.p.SigSize, tc.sigBytes)
-		}
+		t.Run(tc.p.Name, func(t *testing.T) {
+			if tc.p.N != tc.n {
+				t.Errorf("N=%d want %d", tc.p.N, tc.n)
+			}
+			if tc.p.PKSize != tc.pkBytes {
+				t.Errorf("PKSize=%d want %d", tc.p.PKSize, tc.pkBytes)
+			}
+			if tc.p.SKSize != tc.skBytes {
+				t.Errorf("SKSize=%d want %d", tc.p.SKSize, tc.skBytes)
+			}
+			if tc.p.SigSize != tc.sigBytes {
+				t.Errorf("SigSize=%d want %d", tc.p.SigSize, tc.sigBytes)
+			}
+		})
 	}
 }
