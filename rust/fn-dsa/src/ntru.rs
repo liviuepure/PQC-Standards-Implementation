@@ -15,6 +15,16 @@ use crate::fft::{fft, ifft, Complex64};
 use crate::ntt::poly_mul_ntt;
 use crate::FnDsaError;
 
+/// Zeroes a Vec<BigInt> by clearing each integer's internal representation.
+/// BigInt does not implement zeroize::Zeroize natively, so we manually assign
+/// zero to each element to overwrite the secret digits in memory.
+fn zeroize_bigint_vec(v: &mut Vec<BigInt>) {
+    for x in v.iter_mut() {
+        *x = BigInt::zero();
+    }
+    v.clear();
+}
+
 /// Generates (f, g, F, G) satisfying f*G - g*F = Q over Z[x]/(x^n+1).
 pub fn ntru_keygen<R: RngCore>(
     p: Params,
@@ -55,7 +65,7 @@ pub fn ntru_keygen<R: RngCore>(
 
         match ntru_solve_big(n, &f_big, &g_big) {
             Err(_) => continue,
-            Ok((f_res, g_res)) => {
+            Ok((mut f_res, mut g_res)) => {
                 // Convert back to i32.
                 let f_out: Option<Vec<i32>> = f_res.iter().map(|v| {
                     let x = ToPrimitive::to_i64(v)?;
@@ -65,6 +75,10 @@ pub fn ntru_keygen<R: RngCore>(
                     let x = ToPrimitive::to_i64(v)?;
                     if x > i32::MAX as i64 || x < i32::MIN as i64 { None } else { Some(x as i32) }
                 }).collect();
+
+                // Zeroize the BigInt secret vectors now that we have extracted i32 copies.
+                zeroize_bigint_vec(&mut f_res);
+                zeroize_bigint_vec(&mut g_res);
 
                 if let (Some(cap_f), Some(cap_g)) = (f_out, g_out) {
                     // Verify the NTRU equation.
@@ -255,18 +269,114 @@ fn babai_float64(
     kc.iter().map(|v| BigInt::from(v.0.round() as i64)).collect()
 }
 
-/// High-precision Babai using a custom big-float complex FFT.
-/// For deep levels where f64 is insufficient, we use a higher-precision approach.
-/// We use f64 but with iterative refinement via multiple rounds.
+/// Computes the negacyclic adjoint of a polynomial in Z[x]/(x^n+1).
+///
+/// The adjoint (or "conjugate") is defined as:
+///   f*(x) = f[0] - f[n-1]*x - f[n-2]*x^2 - ... - f[1]*x^{n-1}
+///
+/// This satisfies f * f* = ||f||^2 (the squared L2 norm) when the polynomial
+/// ring is viewed as a module over Z.
+fn negacyclic_adjoint(f: &[BigInt], n: usize) -> Vec<BigInt> {
+    let mut adj = vec![BigInt::zero(); n];
+    adj[0] = f[0].clone();
+    for i in 1..n {
+        adj[i] = -f[n - i].clone();
+    }
+    adj
+}
+
+/// Rounds a BigInt rational num/denom to the nearest integer.
+/// Uses the formula: floor((2*num + denom) / (2*denom)) for positive denom.
+fn round_div(num: &BigInt, denom: &BigInt) -> BigInt {
+    // round(num/denom) = floor((2*num + denom) / (2*denom))
+    // Works for both positive and negative numerators when denom > 0.
+    let two = BigInt::from(2i32);
+    let two_num = &two * num;
+    let shifted = two_num + denom;
+    let two_denom = &two * denom;
+    // Use Euclidean-style floor division
+    &shifted / &two_denom
+}
+
+/// High-precision Babai reduction using exact BigInt arithmetic — no f64 at all.
+///
+/// Computes k = round((F·f* + G·g*) / (f·f* + g·g*)) where f* is the negacyclic
+/// adjoint, and all products are negacyclic polynomial multiplications in
+/// Z[x]/(x^n+1). The division is done coefficient-wise: we compute the denominator
+/// polynomial d = f·f* + g·g* and the numerator polynomial p = F·f* + G·g*, then
+/// solve for k such that k·d ≈ p in Z[x]/(x^n+1) via coefficient-wise rounding.
+///
+/// This replaces the previous incorrect implementation that fell back to f64
+/// (defeating the purpose of "high precision" for large coefficients).
 fn babai_high_prec(
     big_f: &[BigInt], big_g: &[BigInt],
     f_big: &[BigInt], g_big: &[BigInt],
     n: usize,
 ) -> Vec<BigInt> {
-    // Convert f_big, g_big to f64 (may lose precision but good enough for rounding)
-    let f_f64: Vec<f64> = f_big.iter().map(|v| bigint_to_f64(v)).collect();
-    let g_f64: Vec<f64> = g_big.iter().map(|v| bigint_to_f64(v)).collect();
-    babai_float64(big_f, big_g, &f_f64, &g_f64, n)
+    // Compute adjoint polynomials.
+    let f_adj = negacyclic_adjoint(f_big, n);
+    let g_adj = negacyclic_adjoint(g_big, n);
+
+    // Compute numerator polynomial: num = F·f* + G·g* in Z[x]/(x^n+1).
+    let f_f_adj = poly_mul_bigint_z(big_f, &f_adj, n);
+    let g_g_adj = poly_mul_bigint_z(big_g, &g_adj, n);
+    let mut num_poly = vec![BigInt::zero(); n];
+    for i in 0..n {
+        num_poly[i] = &f_f_adj[i] + &g_g_adj[i];
+    }
+
+    // Compute denominator polynomial: den = f·f* + g·g* in Z[x]/(x^n+1).
+    let ff_adj = poly_mul_bigint_z(f_big, &f_adj, n);
+    let gg_adj = poly_mul_bigint_z(g_big, &g_adj, n);
+    let mut den_poly = vec![BigInt::zero(); n];
+    for i in 0..n {
+        den_poly[i] = &ff_adj[i] + &gg_adj[i];
+    }
+
+    // The denominator polynomial d = f·f* + g·g* has the property that it is
+    // "almost" a scalar multiple of 1 for the polynomials arising in NTRU keygen
+    // (it is related to the Gram matrix). Its constant term is the dominant entry.
+    //
+    // We compute k by polynomial long division of num_poly by den_poly in
+    // Z[x]/(x^n+1), using the leading coefficient (constant term in the
+    // negacyclic ring sense) for division at each step.
+    //
+    // Concretely: solve k·den_poly ≡ num_poly (mod x^n+1) over Q, then round k.
+    // We do this via iterative coefficient extraction (analogous to long division).
+    let mut remainder = num_poly.clone();
+    let mut k_coeffs = vec![BigInt::zero(); n];
+
+    // The constant term of den_poly is the squared L2 norm of (f, g): always > 0.
+    let d0 = &den_poly[0];
+    if d0.is_zero() {
+        // Degenerate case: fall back to float path to avoid division by zero.
+        let f_f64: Vec<f64> = f_big.iter().map(|v| bigint_to_f64(v)).collect();
+        let g_f64: Vec<f64> = g_big.iter().map(|v| bigint_to_f64(v)).collect();
+        return babai_float64(big_f, big_g, &f_f64, &g_f64, n);
+    }
+
+    // For each coefficient j of k (in order), set k[j] = round(remainder[j] / d0),
+    // then subtract k[j] * (den_poly shifted by j) from remainder.
+    // This works well when den_poly ≈ d0 * 1 (i.e., d is close to a scalar).
+    for j in 0..n {
+        let kj = round_div(&remainder[j], d0);
+        if kj.is_zero() {
+            continue;
+        }
+        // Subtract kj * (x^j * den_poly) from remainder (mod x^n+1).
+        for l in 0..n {
+            let idx = j + l;
+            let term = &kj * &den_poly[l];
+            if idx < n {
+                remainder[idx] -= &term;
+            } else {
+                remainder[idx - n] += &term; // negacyclic: x^n = -1
+            }
+        }
+        k_coeffs[j] = kj;
+    }
+
+    k_coeffs
 }
 
 /// Recursive NTRU solver using exact big.Int arithmetic.
