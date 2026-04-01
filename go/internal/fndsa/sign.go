@@ -68,10 +68,14 @@ func roundFFTToInt32s(fft []complex128, n int) []int32 {
 }
 
 // recoverG recovers G from (f, g, F) using the NTRU equation fG - gF = Q.
-// Since G coefficients are bounded well below Q/2, computing mod q and
-// centering gives the exact integer value.
-func recoverG(f, g, F []int32, n int) []int32 {
-	// Compute gF mod q in coefficient domain via NTT.
+// From the equation: f·G ≡ g·F (mod q), so G ≡ g·F·f⁻¹ (mod q).
+// Since the Gram-Schmidt norm check during key generation ensures |G_i| << Q/2,
+// the mod-q result centered in (-Q/2, Q/2] equals the exact integer value.
+//
+// Returns (G, true) on success. Returns (nil, false) if f is not invertible
+// mod q (i.e. some NTT coefficient of f is zero), indicating a corrupt key.
+func recoverG(f, g, F []int32, n int) ([]int32, bool) {
+	// Compute gF = g·F mod q via NTT.
 	gModQ := make([]int32, n)
 	FModQ := make([]int32, n)
 	for i := range g {
@@ -79,10 +83,8 @@ func recoverG(f, g, F []int32, n int) []int32 {
 		FModQ[i] = ((F[i] % Q) + Q) % Q
 	}
 	gF := PolyMulNTT(gModQ, FModQ, n)
-	// Add Q to constant term (gF + Q corresponds to gF + q·1 in coefficient domain).
-	gF[0] = int32((int64(gF[0]) + Q) % Q)
 
-	// Compute f^{-1} mod q via NTT: invert each NTT coefficient using Fermat's little theorem.
+	// Compute f⁻¹ mod q via NTT: each NTT coefficient is inverted by Fermat's little theorem.
 	fModQ := make([]int32, n)
 	for i, v := range f {
 		fModQ[i] = ((v % Q) + Q) % Q
@@ -90,13 +92,20 @@ func recoverG(f, g, F []int32, n int) []int32 {
 	fNTT := make([]int32, n)
 	copy(fNTT, fModQ)
 	NTT(fNTT, n)
-	for i, v := range fNTT {
-		fNTT[i] = nttPow(int64(v), int64(Q-2))
+	// Validate invertibility: a zero NTT coefficient means f is not invertible mod q.
+	for _, v := range fNTT {
+		if v == 0 {
+			return nil, false
+		}
 	}
-	INTT(fNTT, n)
+	fInvNTT := make([]int32, n)
+	for i, v := range fNTT {
+		fInvNTT[i] = nttPow(int64(v), int64(Q-2))
+	}
+	INTT(fInvNTT, n)
 
-	// G = (gF + Q) * f^{-1} mod q.
-	G := PolyMulNTT(gF, fNTT, n)
+	// G = g·F·f⁻¹ mod q.
+	G := PolyMulNTT(gF, fInvNTT, n)
 
 	// Center coefficients in (-Q/2, Q/2].
 	result := make([]int32, n)
@@ -106,10 +115,18 @@ func recoverG(f, g, F []int32, n int) []int32 {
 		}
 		result[i] = v
 	}
-	return result
+	return result, true
 }
 
 // ffSamplingBabai implements the two-step Babai nearest-plane algorithm for FN-DSA.
+//
+// NOTE: This is a Babai nearest-plane approximation, NOT the full Gaussian
+// sampler specified in FIPS 206 Algorithm 11 (ffSampling_n). It does not
+// produce signatures with the correct discrete Gaussian distribution required
+// for side-channel security. It is suitable only for functional/correctness
+// testing of the signing pipeline. A production implementation must replace
+// this with the recursive FIPS 206 ffSampling algorithm using the Gram-Schmidt
+// ffTree and the RCDT-based Gaussian sampler.
 //
 // The NTRU coset lattice L = {(a,b) : a + b*h ≡ 0 (mod q)} has basis
 // B = [[g, -f], [G, -F]] with det(B) = f*G - g*F = q.
@@ -261,8 +278,11 @@ func SignInternal(sk, msg []byte, p *Params, rng io.Reader) ([]byte, error) {
 	}
 	n := p.N
 
-	// Recover G from (f, g, F) via the NTRU equation.
-	G := recoverG(f, g, F, n)
+	// Recover G from (f, g, F) via the NTRU equation fG - gF = Q.
+	G, ok2 := recoverG(f, g, F, n)
+	if !ok2 {
+		return nil, errors.New("fndsa: invalid secret key: f is not invertible mod q")
+	}
 
 	// Pre-compute h = g*f^{-1} mod q (needed for verification check).
 	h := NTRUPublicKey(f, g, p)
