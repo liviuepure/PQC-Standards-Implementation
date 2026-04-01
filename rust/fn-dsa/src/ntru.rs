@@ -346,13 +346,12 @@ fn babai_high_prec(
     let mut remainder = num_poly.clone();
     let mut k_coeffs = vec![BigInt::zero(); n];
 
-    // The constant term of den_poly is the squared L2 norm of (f, g): always > 0.
+    // The constant term of den_poly is ||f||² + ||g||² (sum of squared L2 norms),
+    // which is always strictly positive for any nonzero f, g. A zero here means
+    // the caller passed an invalid (all-zero) NTRU polynomial basis.
     let d0 = &den_poly[0];
     if d0.is_zero() {
-        // Degenerate case: fall back to float path to avoid division by zero.
-        let f_f64: Vec<f64> = f_big.iter().map(|v| bigint_to_f64(v)).collect();
-        let g_f64: Vec<f64> = g_big.iter().map(|v| bigint_to_f64(v)).collect();
-        return babai_float64(big_f, big_g, &f_f64, &g_f64, n);
+        panic!("babai_high_prec: zero denominator — invalid NTRU polynomial basis");
     }
 
     // For each coefficient j of k (in order), set k[j] = round(remainder[j] / d0),
@@ -427,6 +426,13 @@ fn ntru_solve_big(n: usize, f: &[BigInt], g: &[BigInt]) -> Result<(Vec<BigInt>, 
             max_bits.max(fg_bits)
         };
 
+        // Dispatch to the appropriate Babai-reduction implementation:
+        //   max_fg_bits <= 53: all coefficients fit within an f64 mantissa (53-bit
+        //     significand), so floating-point arithmetic is exact and babai_float64
+        //     is both correct and fast.
+        //   max_fg_bits >  53: coefficients exceed f64 precision; using f64 would
+        //     introduce rounding errors that corrupt the reduction. babai_high_prec
+        //     uses exact BigInt arithmetic to guarantee a correct result.
         let k = if max_fg_bits <= 53 {
             let f_f64: Vec<f64> = f.iter().map(|v| bigint_to_f64(v)).collect();
             let g_f64: Vec<f64> = g.iter().map(|v| bigint_to_f64(v)).collect();
