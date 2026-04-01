@@ -9,6 +9,11 @@ pub mod encode;
 pub mod sign;
 pub mod verify;
 
+// NOTE: The FIPS 206 spec and Go reference implementation use names like
+// "FNDSAPadded512" and "FNDSAPadded1024". In Rust, SCREAMING_SNAKE_CASE is
+// idiomatic for constants, so we use FNDSA_PADDED_512 / FNDSA_PADDED_1024
+// instead of FNDSA_PADDED512 / FNDSA_PADDED1024. This is a deliberate
+// idiomatic Rust choice, not a spec deviation.
 pub use params::{Params, FNDSA512, FNDSA1024, FNDSA_PADDED_512, FNDSA_PADDED_1024, ALL_PARAMS};
 
 /// Error type for FN-DSA operations.
