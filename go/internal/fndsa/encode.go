@@ -20,9 +20,14 @@ func EncodePK(h []int32, p *Params) []byte {
 }
 
 // DecodePK decodes a FIPS 206 public key and returns the NTT coefficients.
-// The header byte is not validated; callers that need strict validation should
-// check it themselves.
+// Returns nil if the data length or header byte does not match p.
 func DecodePK(data []byte, p *Params) []int32 {
+	if len(data) != p.PKSize {
+		return nil
+	}
+	if data[0] != byte(0x00|p.LogN) {
+		return nil
+	}
 	return unpackBits14(data[1:], p.N)
 }
 
@@ -338,10 +343,9 @@ func compressS1(dst []byte, s1 []int32, n, lo int) (bytesUsed int, ok bool) {
 
 // decompressS1 reads n coefficients from src using the FIPS 206
 // variable-length scheme with parameter lo.  Returns (s1, true) on success.
-// Returns (nil, false) if the input is malformed.
+// Returns (nil, false) if the input is malformed, including the non-canonical
+// case of a zero coefficient encoded with sign bit 1 (FIPS 206 §3.11.5).
 func decompressS1(src []byte, n, lo int) ([]int32, bool) {
-	loMask := int32((1 << lo) - 1)
-	_ = loMask
 	totalBits := len(src) * 8
 	cursor := 0
 
@@ -385,6 +389,10 @@ func decompressS1(src []byte, n, lo int) ([]int32, bool) {
 
 		v := (high << lo) | low
 		if signBit == 1 {
+			// Non-canonical: zero with sign bit 1 is invalid (FIPS 206 §3.11.5).
+			if v == 0 {
+				return nil, false
+			}
 			v = -v
 		}
 		out[i] = v
