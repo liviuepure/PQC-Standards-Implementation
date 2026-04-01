@@ -77,18 +77,20 @@ func nttPsi(n int) int64 {
 //
 // Butterfly: for group k (1-indexed), twiddle = psi^bit_rev(k, log2(n)).
 // The output is in bit-reversed order (consistent with INTT).
+// Twiddle factors are looked up from the precomputed zeta tables in tables.go.
 func NTT(f []int32, n int) {
-	logn := 0
-	for t := n; t > 1; t >>= 1 {
-		logn++
+	var zetas []int32
+	if n == 512 {
+		zetas = nttZetas512[:]
+	} else {
+		zetas = nttZetas1024[:]
 	}
-	psi := nttPsi(n)
 
 	k := 0
 	for length := n >> 1; length >= 1; length >>= 1 {
 		for start := 0; start < n; start += 2 * length {
 			k++
-			zeta := int64(nttPow(psi, int64(nttBitRev(k, logn))))
+			zeta := int64(zetas[k])
 			for j := start; j < start+length; j++ {
 				t := nttMulModQ(zeta, int64(f[j+length]))
 				f[j+length] = nttSubModQ(f[j], t)
@@ -105,20 +107,24 @@ func NTT(f []int32, n int) {
 // The butterfly order reverses NTT exactly: within each layer, blocks are
 // processed in reverse order so the twiddle indices match their NTT counterparts.
 // The result is scaled by n^{-1} mod Q.
+// Inverse twiddle factors are looked up from the precomputed inverse zeta tables in tables.go.
 func INTT(f []int32, n int) {
-	logn := 0
-	for t := n; t > 1; t >>= 1 {
-		logn++
+	var zetasInv []int32
+	var nInv int64
+	if n == 512 {
+		zetasInv = nttZetasInv512[:]
+		nInv = int64(nttPow(512, int64(Q-2)))
+	} else {
+		zetasInv = nttZetasInv1024[:]
+		nInv = int64(nttPow(1024, int64(Q-2)))
 	}
-	psi := nttPsi(n)
-	psiInv := int64(nttPow(psi, int64(Q-2)))
 
 	k := n
 	for length := 1; length < n; length <<= 1 {
 		// Iterate starts in reverse order to undo NTT butterflies in reverse.
 		for start := n - 2*length; start >= 0; start -= 2 * length {
 			k--
-			zetaInv := int64(nttPow(psiInv, int64(nttBitRev(k, logn))))
+			zetaInv := int64(zetasInv[k])
 			for j := start; j < start+length; j++ {
 				t := f[j]
 				f[j] = nttAddModQ(t, f[j+length])
@@ -128,7 +134,6 @@ func INTT(f []int32, n int) {
 	}
 
 	// Scale by n^{-1} mod Q.
-	nInv := int64(nttPow(int64(n), int64(Q-2)))
 	for i := range f {
 		f[i] = nttMulModQ(nInv, int64(f[i]))
 	}
