@@ -233,6 +233,9 @@ func ntruSolve(n int, f, g []int32) (F, G []int32, err error) {
 }
 
 // ntruSolveBig solves the NTRU equation recursively using exact big.Int arithmetic.
+// Algorithm follows FALCON spec §3.8 and Pornin & Prest (2019),
+// "Simple, Fast, Constant-Time Gaussian Sampling over the Integers"
+// (https://eprint.iacr.org/2019/015).
 // At each level, the Babai reduction uses the current level's f,g polynomials (fBig, gBig).
 // For levels where the coefficients fit in float64 (≤ 53 bits), float64 FFT is used.
 // For deeper levels with large coefficients, big.Float FFT is used.
@@ -319,8 +322,14 @@ func ntruSolveBig(n int, fBig, gBig []*big.Int) (F, G []*big.Int, err error) {
 			}
 			k = babaiFloat64BigF(FLifted, GLifted, fSmall, gSmall, n)
 		} else {
-			// Large coefficients: use big.Float Babai with sufficient precision.
-			// Precision must cover the magnitude of values plus rounding.
+			// float64 is insufficient here: intermediate F, G coefficients grow to
+			// ~4000 bits during the recursive field-norm computation. At n=1024 the
+			// recursion has ~10 levels; each level roughly doubles the coefficient
+			// magnitude (the field norm squares the input polynomial), so top-level
+			// coefficients far exceed float64's 53-bit mantissa. Using float64 at
+			// this stage would lose all precision and produce +Inf, yielding an
+			// incorrect (or non-terminating) Babai reduction. big.Float with
+			// precision proportional to the actual bit length is required.
 			prec := uint(maxFGBits*2 + fftLogN(n)*64 + 256)
 			k = babaiBigFloat(FLifted, GLifted, fBig, gBig, n, prec)
 		}

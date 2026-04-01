@@ -5,68 +5,54 @@ import (
 	"testing"
 )
 
-// TestNTRUEquation verifies that f*G - g*F = q over Z[x]/(x^n+1).
+// TestNTRUEquation verifies that f*G - g*F = q over Z[x]/(x^n+1) for each parameter set.
 func TestNTRUEquation(t *testing.T) {
-	p := FNDSA512
-	f, g, F, G, err := NTRUKeyGen(p, crypto_rand.Reader)
-	if err != nil {
-		t.Fatalf("NTRUKeyGen: %v", err)
-	}
+	for _, p := range []*Params{FNDSA512, FNDSA1024} {
+		p := p // capture loop variable
+		t.Run(p.Name, func(t *testing.T) {
+			f, g, F, G, err := NTRUKeyGen(p, crypto_rand.Reader)
+			if err != nil {
+				t.Fatalf("NTRUKeyGen: %v", err)
+			}
 
-	// f*G - g*F should equal the polynomial q (constant = Q, rest 0).
-	fG := polyMulIntZ(f, G, p.N)
-	gF := polyMulIntZ(g, F, p.N)
-	diff := polySubIntZ(fG, gF, p.N)
+			// f*G - g*F should equal the polynomial q (constant = Q, rest 0).
+			fG := polyMulIntZ(f, G, p.N)
+			gF := polyMulIntZ(g, F, p.N)
+			diff := polySubIntZ(fG, gF, p.N)
 
-	if diff[0] != int64(Q) {
-		t.Errorf("constant term: got %d want %d", diff[0], Q)
-	}
-	for i := 1; i < p.N; i++ {
-		if diff[i] != 0 {
-			t.Errorf("coeff[%d]: got %d want 0", i, diff[i])
-		}
-	}
-}
-
-// TestNTRUEquation1024 verifies NTRU equation for n=1024 parameter set.
-func TestNTRUEquation1024(t *testing.T) {
-	p := FNDSA1024
-	f, g, F, G, err := NTRUKeyGen(p, crypto_rand.Reader)
-	if err != nil {
-		t.Fatalf("NTRUKeyGen: %v", err)
-	}
-
-	fG := polyMulIntZ(f, G, p.N)
-	gF := polyMulIntZ(g, F, p.N)
-	diff := polySubIntZ(fG, gF, p.N)
-
-	if diff[0] != int64(Q) {
-		t.Errorf("constant term: got %d want %d", diff[0], Q)
-	}
-	for i := 1; i < p.N; i++ {
-		if diff[i] != 0 {
-			t.Errorf("coeff[%d]: got %d want 0", i, diff[i])
-		}
+			if diff[0] != int64(Q) {
+				t.Errorf("constant term: got %d want %d", diff[0], Q)
+			}
+			for i := 1; i < p.N; i++ {
+				if diff[i] != 0 {
+					t.Errorf("coeff[%d]: got %d want 0", i, diff[i])
+				}
+			}
+		})
 	}
 }
 
-// TestNTRUPublicKey verifies that f*h = g mod (q, x^n+1).
+// TestNTRUPublicKey verifies that f*h = g mod (q, x^n+1) for each parameter set.
 func TestNTRUPublicKey(t *testing.T) {
-	p := FNDSA512
-	f, g, _, _, err := NTRUKeyGen(p, crypto_rand.Reader)
-	if err != nil {
-		t.Fatal(err)
-	}
-	h := NTRUPublicKey(f, g, p)
-	fh := PolyMulNTT(reduceModQ(f, p.N), h, p.N)
-	gModQ := make([]int32, p.N)
-	for i, v := range g {
-		gModQ[i] = ((v % Q) + Q) % Q
-	}
-	for i := range fh {
-		if fh[i] != gModQ[i] {
-			t.Fatalf("f*h != g at coeff %d: got %d want %d", i, fh[i], gModQ[i])
-		}
+	for _, p := range []*Params{FNDSA512, FNDSA1024} {
+		p := p // capture loop variable
+		t.Run(p.Name, func(t *testing.T) {
+			f, g, _, _, err := NTRUKeyGen(p, crypto_rand.Reader)
+			if err != nil {
+				t.Fatal(err)
+			}
+			h := NTRUPublicKey(f, g, p)
+			fh := PolyMulNTT(reduceModQ(f, p.N), h, p.N)
+			gModQ := make([]int32, p.N)
+			for i, v := range g {
+				gModQ[i] = ((v % Q) + Q) % Q
+			}
+			for i := range fh {
+				if fh[i] != gModQ[i] {
+					t.Fatalf("f*h != g at coeff %d: got %d want %d", i, fh[i], gModQ[i])
+				}
+			}
+		})
 	}
 }
 
@@ -123,12 +109,11 @@ func TestPolyAddSub(t *testing.T) {
 	}
 }
 
-// TestNTRUAdjoint verifies the adjoint operation: f * f_adj[0] = ||f||^2 (constant term).
+// TestNTRUAdjoint verifies the adjoint operation: adj[0] = f[0], adj[i] = -f[n-i] for i >= 1.
 func TestNTRUAdjoint(t *testing.T) {
 	n := 8
 	f := []int32{1, 2, 3, 4, 5, 6, 7, 8}
 	adj := polyAdjoint(f, n)
-	// adj[0] = f[0], adj[i] = -f[n-i] for i >= 1.
 	if adj[0] != f[0] {
 		t.Errorf("adj[0]=%d want %d", adj[0], f[0])
 	}
