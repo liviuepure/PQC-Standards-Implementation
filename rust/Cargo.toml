@@ -8,6 +8,7 @@ members = [
     "composite-sig",
     "hybrid-kem",
     "pqc-tls",
+    "fn-dsa",
 ]
 
 [workspace.package]
