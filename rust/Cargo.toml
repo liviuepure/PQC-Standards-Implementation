@@ -9,6 +9,7 @@ members = [
     "hybrid-kem",
     "pqc-tls",
     "fn-dsa",
+    "hqc",
 ]
 
 [workspace.package]

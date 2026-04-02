@@ -463,6 +463,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "hqc"
+version = "0.1.0"
+dependencies = [
+ "rand",
+ "rand_core",
+ "sha3",
+]
+
+[[package]]
 name = "hybrid-kem"
 version = "0.1.0"
 dependencies = [
