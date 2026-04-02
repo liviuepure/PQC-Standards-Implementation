@@ -1,0 +1,18 @@
+{
+  "name": "fndsa",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "FN-DSA (FIPS 206) post-quantum digital signatures",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "node --experimental-vm-modules node_modules/.bin/jest"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "jest": {
+    "transform": {},
+    "testEnvironment": "node",
+    "extensionsToTreatAsEsm": []
+  }
+}
