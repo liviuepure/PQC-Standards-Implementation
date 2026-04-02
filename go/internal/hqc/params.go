@@ -84,7 +84,7 @@ var (
 		VecN1N2SizeBytes: 2208, // ceil(17664/8)
 		VecKSizeBytes:    16,
 
-		GFPoly:     0x11B,
+		GFPoly:     0x11D,
 		GFMulOrder: 255,
 		RMOrder:    7,
 		Multiplicity: 3, // 384 / 128
@@ -114,7 +114,7 @@ var (
 		VecN1N2SizeBytes: 4480, // ceil(35840/8)
 		VecKSizeBytes:    24,
 
-		GFPoly:     0x11B,
+		GFPoly:     0x11D,
 		GFMulOrder: 255,
 		RMOrder:    7,
 		Multiplicity: 5, // 640 / 128
@@ -144,7 +144,7 @@ var (
 		VecN1N2SizeBytes: 7200, // ceil(57600/8)
 		VecKSizeBytes:    32,
 
-		GFPoly:     0x11B,
+		GFPoly:     0x11D,
 		GFMulOrder: 255,
 		RMOrder:    7,
 		Multiplicity: 5, // 640 / 128
