@@ -59,6 +59,7 @@ class FnDsaTest {
     @Test
     void testInteropVectors() throws Exception {
         HexFormat hex = HexFormat.of();
+        boolean anyRan = false;
         for (Object[] entry : new Object[][] {
             {"FN-DSA-512", Params.FNDSA512},
             {"FN-DSA-1024", Params.FNDSA1024}
@@ -86,6 +87,7 @@ class FnDsaTest {
                 continue;
             }
 
+            anyRan = true;
             String json = Files.readString(path);
             List<TestVector> vectors = parseVectors(json);
             System.out.println("Testing " + vectors.size() + " vectors for " + name);
@@ -100,6 +102,7 @@ class FnDsaTest {
                     "Interop vector " + i + " for " + name + " should verify");
             }
         }
+        org.junit.jupiter.api.Assumptions.assumeTrue(anyRan, "No FN-DSA test vector files found — interop test skipped");
     }
 
     // Minimal JSON parser for test vectors (no Jackson dependency needed)
