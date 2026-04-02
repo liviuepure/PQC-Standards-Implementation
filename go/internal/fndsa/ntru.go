@@ -2,6 +2,7 @@ package fndsa
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"math"
 	"math/big"
@@ -290,6 +291,7 @@ func ntruSolveBig(n int, fBig, gBig []*big.Int) (F, G []*big.Int, err error) {
 		}
 	}
 
+	fmt.Printf("n=%d: f=%d g=%d F=%d G=%d bits before Babai\n", n, maxBitLen(fBig), maxBitLen(gBig), maxBitLen(FLifted), maxBitLen(GLifted))
 	// Babai reduction using the current level's f,g.
 	// Run 2 rounds to ensure thorough reduction.
 	for round := 0; round < 2; round++ {
@@ -333,15 +335,33 @@ func ntruSolveBig(n int, fBig, gBig []*big.Int) (F, G []*big.Int, err error) {
 			prec := uint(maxFGBits*2 + fftLogN(n)*64 + 256)
 			k = babaiBigFloat(FLifted, GLifted, fBig, gBig, n, prec)
 		}
+		kBits := maxBitLen(k)
+		fmt.Printf("  k max bits=%d (n=%d round=%d)\n", kBits, n, round)
+		if n == 64 && round == 0 {
+			fmt.Printf("  k[0]=%d, k[1]=%d, k[2]=%d\n", k[0], k[1], k[2])
+			fmt.Printf("  F[0]=%d bits, f[0]=%d bits\n", fBig[0].BitLen(), fBig[0].BitLen())
+			fmt.Printf("  FLifted[0]=%d bits\n", FLifted[0].BitLen())
+		}
 		kf := polyMulIntZBig(k, fBig, n)
 		kg := polyMulIntZBig(k, gBig, n)
 		for i := 0; i < n; i++ {
 			FLifted[i].Sub(FLifted[i], kf[i])
 			GLifted[i].Sub(GLifted[i], kg[i])
 		}
+		fmt.Printf("  after Babai n=%d round=%d: F=%d G=%d bits\n", n, round, maxBitLen(FLifted), maxBitLen(GLifted))
 	}
 
 	return FLifted, GLifted, nil
+}
+
+func maxBitLen(vs []*big.Int) int {
+	max := 0
+	for _, v := range vs {
+		if b := v.BitLen(); b > max {
+			max = b
+		}
+	}
+	return max
 }
 
 // babaiFloat64BigF computes the Babai rounding k using float64 FFT.
