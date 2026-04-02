@@ -70,6 +70,6 @@ describe('FN-DSA', () => {
       }
       anyRan = true;
     }
-    if (!anyRan) return; // no test vector files found, skip
+    expect(anyRan).toBe(true); // fail if no vector files found, rather than silently passing
   });
 });
