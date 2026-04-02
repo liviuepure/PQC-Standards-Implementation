@@ -4,6 +4,7 @@
 // in the recursive NTRU solver.
 
 use num_bigint::{BigInt, Sign};
+use num_integer::Integer;
 use num_traits::{One, Zero, ToPrimitive};
 use rand_core::RngCore;
 
@@ -294,8 +295,8 @@ fn round_div(num: &BigInt, denom: &BigInt) -> BigInt {
     let two_num = &two * num;
     let shifted = two_num + denom;
     let two_denom = &two * denom;
-    // Use Euclidean-style floor division
-    &shifted / &two_denom
+    // Use floor division (not truncated-toward-zero) for correct rounding with negative values
+    shifted.div_floor(&two_denom)
 }
 
 /// High-precision Babai reduction using exact BigInt arithmetic — no f64 at all.
