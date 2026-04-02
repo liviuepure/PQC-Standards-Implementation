@@ -109,20 +109,15 @@ export function sampleGaussian(sigma, rng) {
     // Sample u in [0,1) using 53 random bits
     const uBuf = rng(8);
     // Read as little-endian, shift right 11 to get 53 bits
-    // Build u53 as a number from 7 bytes (56 bits) then >> 11 gives 45 bits...
-    // Actually use the top 53 bits: bytes 7 down to 0 shifted right 11
-    // Use float: (uint53) / 2^53
-    // More precisely: read 8 bytes LE as a 64-bit int, drop 11 low bits
-    const u53 = (
-      (uBuf[7] * 0x200000 + uBuf[6] * 0x2000 + (uBuf[5] >> 3)) / 1 +
-      ((uBuf[4] << 29) + (uBuf[3] << 21) + (uBuf[2] << 13) + (uBuf[1] << 5) + (uBuf[0] >> 3)) * 0x100000
-    );
-    // Actually simpler: use a DataView
+    // Use a DataView to read 8 bytes LE, then form a 53-bit uniform value.
+    // hi32 contributes the top 32 bits, shifted left by 21 (= 2^21), and
+    // lo32 contributes the top 21 bits (lo32 >>> 11), giving a 53-bit integer
+    // in [0, 2^53) which is then divided by 2^53 to land in [0, 1).
     const dv = new DataView(uBuf.buffer, uBuf.byteOffset, 8);
     const lo32 = dv.getUint32(0, true);
     const hi32 = dv.getUint32(4, true);
     // 53-bit value from upper 53 bits: hi32 (32 bits) + top 21 bits of lo32
-    const u = (hi32 * 4194304 + (lo32 >>> 11)) / (2 ** 53);
+    const u = (hi32 * 2097152 + (lo32 >>> 11)) / (2 ** 53);
 
     if (u < Math.exp(logProb)) {
       return z;
