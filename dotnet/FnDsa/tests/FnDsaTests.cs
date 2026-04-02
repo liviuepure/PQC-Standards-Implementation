@@ -45,7 +45,7 @@ public class FnDsaTests
         foreach (var (name, p) in new[] { ("FN-DSA-512", Params.FnDsa512), ("FN-DSA-1024", Params.FnDsa1024) })
         {
             var path = Path.Combine("..", "..", "..", "..", "..", "..", "test-vectors", "fn-dsa", $"{name}.json");
-            if (!File.Exists(path)) continue;
+            Assert.True(File.Exists(path), $"Missing vector file: {name}");
             var doc = JsonDocument.Parse(File.ReadAllText(path));
             foreach (var v in doc.RootElement.GetProperty("vectors").EnumerateArray())
             {
