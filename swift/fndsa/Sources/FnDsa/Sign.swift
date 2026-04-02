@@ -52,7 +52,10 @@ private func roundFFTToInt32s(_ fft: [Complex64], _ n: Int) -> [Int32] {
 
 // MARK: - Recover G
 
-/// Recover G from (f, g, F) using the NTRU equation fG - gF = Q.
+/// Recover G from the NTRU equation f·G - g·F = q.
+/// Since q ≡ 0 (mod q), we have G ≡ g·F·f⁻¹ (mod q).
+/// The NTRU keygen norm check ensures |G_i| << q/2 for all coefficients,
+/// so centering mod q gives the exact integer values (no information loss).
 func recoverG(_ f: [Int32], _ g: [Int32], _ F: [Int32], _ n: Int) -> [Int32]? {
     // Compute gF = g*F mod q via NTT.
     var gModQ = [Int32](repeating: 0, count: n)

@@ -51,43 +51,42 @@ func nttBitRev(_ k: Int, _ logn: Int) -> Int {
 
 // MARK: - Zeta table generation
 
-/// Precomputed zeta tables for NTT.
-private var zetaTablesInitialized = false
-private var nttZetas512 = [Int32](repeating: 0, count: 512)
-private var nttZetasInv512 = [Int32](repeating: 0, count: 512)
-private var nttZetas1024 = [Int32](repeating: 0, count: 1024)
-private var nttZetasInv1024 = [Int32](repeating: 0, count: 1024)
-
-private func initZetaTables() {
-    guard !zetaTablesInitialized else { return }
-
-    // psi_512 = 11^((Q-1)/(2*512)) = 11^12 mod Q
-    let psi512 = Int64(nttPow(11, Int64((Q - 1) / (2 * 512))))
-    for k in 0..<512 {
-        let br = nttBitRev(k, 9)
-        let z = nttPow(psi512, Int64(br))
-        nttZetas512[k] = z
-        nttZetasInv512[k] = nttPow(Int64(z), Int64(Q - 2))
+/// Build forward NTT zeta table for degree `n` (512 or 1024).
+private func buildZetas(_ n: Int) -> [Int32] {
+    let logn = n == 512 ? 9 : 10
+    let psi = Int64(nttPow(11, Int64((Q - 1) / (2 * Int32(n)))))
+    var table = [Int32](repeating: 0, count: n)
+    for k in 0..<n {
+        table[k] = nttPow(psi, Int64(nttBitRev(k, logn)))
     }
-
-    // psi_1024 = 11^((Q-1)/(2*1024)) = 11^6 mod Q
-    let psi1024 = Int64(nttPow(11, Int64((Q - 1) / (2 * 1024))))
-    for k in 0..<1024 {
-        let br = nttBitRev(k, 10)
-        let z = nttPow(psi1024, Int64(br))
-        nttZetas1024[k] = z
-        nttZetasInv1024[k] = nttPow(Int64(z), Int64(Q - 2))
-    }
-
-    zetaTablesInitialized = true
+    return table
 }
+
+/// Build inverse NTT zeta table for degree `n` (512 or 1024).
+private func buildZetasInv(_ n: Int) -> [Int32] {
+    let logn = n == 512 ? 9 : 10
+    let psi = Int64(nttPow(11, Int64((Q - 1) / (2 * Int32(n)))))
+    var table = [Int32](repeating: 0, count: n)
+    for k in 0..<n {
+        let z = nttPow(psi, Int64(nttBitRev(k, logn)))
+        table[k] = nttPow(Int64(z), Int64(Q - 2))
+    }
+    return table
+}
+
+/// Precomputed zeta tables for NTT.
+/// File-level `let` with closure initializer is thread-safe by Swift language guarantee
+/// (initialized exactly once, lazily, on first access).
+private let nttZetas512: [Int32] = buildZetas(512)
+private let nttZetasInv512: [Int32] = buildZetasInv(512)
+private let nttZetas1024: [Int32] = buildZetas(1024)
+private let nttZetasInv1024: [Int32] = buildZetasInv(1024)
 
 // MARK: - NTT / INTT
 
 /// Forward negacyclic NTT in-place. n must be 512 or 1024.
 /// Input coefficients must be in [0, Q).
 func nttForward(_ f: inout [Int32], _ n: Int) {
-    initZetaTables()
     let zetas = n == 512 ? nttZetas512 : nttZetas1024
 
     var k = 0
@@ -110,7 +109,6 @@ func nttForward(_ f: inout [Int32], _ n: Int) {
 
 /// Inverse negacyclic NTT in-place. n must be 512 or 1024.
 func nttInverse(_ f: inout [Int32], _ n: Int) {
-    initZetaTables()
     let zetasInv = n == 512 ? nttZetasInv512 : nttZetasInv1024
     let nInv = Int64(nttPow(Int64(n), Int64(Q - 2)))
 
