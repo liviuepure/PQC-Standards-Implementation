@@ -4,7 +4,7 @@ package hqc
 //
 // RS(n1, k) with minimum distance d = n1 - k + 1 = 2*delta + 1.
 // The generator polynomial g(x) = prod(x - alpha^i) for i = 1..2*delta.
-// alpha is the primitive element of GF(2^8) (alpha = gfGen = 3, using polynomial 0x11B).
+// alpha is the primitive element of GF(2^8) (alpha = gfGen = 2, using polynomial 0x11D).
 
 // rsGeneratorPoly computes the generator polynomial of the RS code.
 // Returns coefficients [g0, g1, ..., g_{2*delta}] where g_{2*delta} = 1.

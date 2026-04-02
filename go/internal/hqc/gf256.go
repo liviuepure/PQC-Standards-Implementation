@@ -1,11 +1,11 @@
 package hqc
 
-// GF(2^8) arithmetic with irreducible polynomial x^8 + x^4 + x^3 + x + 1 (0x11B).
-// This is the AES polynomial, used by the HQC specification for Reed-Solomon encoding/decoding.
+// GF(2^8) arithmetic with irreducible polynomial x^8 + x^4 + x^3 + x^2 + 1 (0x11D).
+// This is the polynomial specified by the HQC specification for Reed-Solomon encoding/decoding.
 
 const (
-	gfPoly     = 0x11B // x^8 + x^4 + x^3 + x + 1
-	gfGen      = 3     // primitive element (generator) for GF(2^8) with 0x11B
+	gfPoly     = 0x11D // x^8 + x^4 + x^3 + x^2 + 1
+	gfGen      = 2     // primitive element (generator) for GF(2^8) with 0x11D (x is primitive)
 	gfMulOrder = 255
 )
 
@@ -19,21 +19,19 @@ func init() {
 }
 
 // initGF256Tables precomputes the log and exp tables for GF(2^8).
-// Uses generator 3, which is a primitive element for the AES polynomial 0x11B.
+// Uses generator 2 (alpha = x), which is a primitive element for 0x11D.
 func initGF256Tables() {
 	var x uint16 = 1
 	for i := 0; i < 255; i++ {
 		gf256Exp[i] = byte(x)
 		gf256Exp[i+255] = byte(x) // wrap-around for easy mod 255
 		gf256Log[x] = byte(i)
-		// Multiply x by the generator (3 = x+1 in GF(2^8)):
-		// x * 3 = x * (2 + 1) = (x << 1) ^ x, then reduce mod gfPoly
-		x2 := x ^ (x << 1) // carryless multiply by 3
-		// Reduce: if bit 8 is set, XOR with the polynomial
-		if x2 >= 256 {
-			x2 ^= gfPoly
+		// Multiply x by the generator (2 = x in GF(2^8)):
+		// x * 2 = x << 1, then reduce mod gfPoly if overflow
+		x <<= 1
+		if x >= 256 {
+			x ^= gfPoly
 		}
-		x = x2
 	}
 	gf256Log[0] = 0 // convention: log(0) = 0 (never used for valid math)
 	gf256Exp[510] = gf256Exp[0] // ensure full wrap
@@ -64,7 +62,7 @@ func gf256MulCT(a, b byte) byte {
 		ab <<= 1
 	}
 
-	// Reduce mod x^8 + x^4 + x^3 + x + 1 (0x11B)
+	// Reduce mod x^8 + x^4 + x^3 + x^2 + 1 (0x11D)
 	for i := 14; i >= 8; i-- {
 		if result&(1<<uint(i)) != 0 {
 			result ^= uint16(gfPoly) << uint(i-8)
