@@ -166,7 +166,10 @@ func rsDecode(received []byte, p *Params) ([]byte, bool) {
 			return nil, false
 		}
 
-		errorVal := gf256Mul(omegaVal, gf256Inv(sigPrimeVal))
+		// Forney's formula: e_j = X_j * omega(X_j^{-1}) / sigma'(X_j^{-1})
+		// where X_j = alpha^pos
+		xj := gf256Pow(gfGen, pos)
+		errorVal := gf256Mul(gf256Mul(xj, omegaVal), gf256Inv(sigPrimeVal))
 		r[pos] ^= errorVal
 	}
 
