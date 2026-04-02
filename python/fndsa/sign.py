@@ -5,10 +5,11 @@ Implements:
   - ff_sampling_babai: Babai nearest-plane lattice sampler (NOT FIPS 206 Algorithm 11)
   - sign_internal: full signing with norm-bound retry loop
 
-# NOTE: NOT FIPS 206 Algorithm 11 — Babai nearest-plane, suitable for correctness testing only.
-# A production implementation must replace ff_sampling_babai with the recursive FIPS 206
-# ffSampling algorithm using the Gram-Schmidt ffTree and RCDT-based Gaussian sampler.
+NOTE: NOT FIPS 206 Algorithm 11 — Babai nearest-plane, suitable for correctness testing only.
+A production implementation must replace ff_sampling_babai with the recursive FIPS 206
+ffSampling algorithm using the Gram-Schmidt ffTree and RCDT-based Gaussian sampler.
 """
+from __future__ import annotations
 import hashlib
 import math
 

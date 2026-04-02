@@ -3,6 +3,7 @@
 All bit-packing is LSB-first: bit 0 of coefficient 0 goes to bit 0 of byte 0.
 Mirrors Go encode.go exactly.
 """
+from __future__ import annotations
 
 from .params import Params, Q
 
