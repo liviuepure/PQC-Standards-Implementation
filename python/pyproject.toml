@@ -3,11 +3,15 @@ requires = ["setuptools>=68.0"]
 build-backend = "setuptools.backends._legacy:_Backend"
 
 [project]
-name = "pqc-mlkem"
+name = "pqc-python"
 version = "0.1.0"
-description = "Pure Python implementation of ML-KEM (FIPS 203)"
+description = "Pure Python implementations of PQC algorithms (ML-KEM, ML-DSA, FN-DSA, SLH-DSA)"
 requires-python = ">=3.10"
 license = {text = "MIT"}
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["mlkem*", "mldsa*", "fndsa*", "slhdsa*", "composite*", "hybrid*", "pqctls*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
