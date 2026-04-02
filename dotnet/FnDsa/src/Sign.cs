@@ -30,7 +30,6 @@ internal static class FnDsaSign
                 bufSize *= 2;
                 shakeOut = Shake256Hash(msg, bufSize);
                 pos = 0;
-                count = 0;
             }
             int v = (int)((uint)shakeOut[pos] | ((uint)shakeOut[pos + 1] << 8));
             pos += 2;
