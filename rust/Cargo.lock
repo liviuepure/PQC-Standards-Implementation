@@ -375,6 +375,7 @@ version = "0.1.0"
 dependencies = [
  "hex",
  "num-bigint",
+ "num-integer",
  "num-traits",
  "rand",
  "rand_core",

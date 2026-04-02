@@ -12,6 +12,7 @@ subtle = { workspace = true }
 zeroize = { workspace = true }
 rand_core = { workspace = true }
 num-bigint = { version = "0.4", features = [] }
+num-integer = "0.1"
 num-traits = "0.2"
 
 [dev-dependencies]
