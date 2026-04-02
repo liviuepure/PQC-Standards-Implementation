@@ -38,6 +38,10 @@ jobs:
         with:
           node-version: '22'
       - run: cd js && node --test test/*.js
+      - name: FN-DSA JS Tests
+        run: cd js/fndsa && npm install && npm test
+      - name: HQC JS Tests
+        run: cd js/hqc && npm install && npm test
 
   python:
     name: Python Tests
@@ -77,6 +81,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: cd swift && swift test
+      - name: FN-DSA Swift Tests
+        run: cd swift/fndsa && swift test
+      - name: HQC Swift Tests
+        run: cd swift/hqc && swift test
 
   php:
     name: PHP Tests

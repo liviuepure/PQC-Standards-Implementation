@@ -1,8 +1,10 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/PqcStandards/PqcStandards.csproj" />
+    <Project Path="FnDsa/FnDsa.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/PqcStandards.Tests/PqcStandards.Tests.csproj" />
+    <Project Path="FnDsa/tests/FnDsaTests.csproj" />
   </Folder>
 </Solution>
