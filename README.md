@@ -9,6 +9,8 @@ Pure implementations of NIST Post-Quantum Cryptography standards across 8 progra
 | **FIPS 203** | ML-KEM (Kyber) | Key Encapsulation | ✅ 8 languages |
 | **FIPS 204** | ML-DSA (Dilithium) | Digital Signature | ✅ 8 languages |
 | **FIPS 205** | SLH-DSA (SPHINCS+) SHAKE | Hash-Based Signature | ✅ 8 languages |
+| **FIPS 206** | FN-DSA (FALCON) | Lattice-Based Signature | ✅ 8 languages |
+| **HQC** | HQC-128/192/256 | Code-Based KEM | ✅ 8 languages |
 | **FIPS 205** | SLH-DSA SHA2 variants | Hash-Based Signature | ✅ Go |
 | Hybrid KEM | X25519+ML-KEM, ECDH+ML-KEM | Hybrid Key Exchange | ✅ Go |
 | Composite Sig | ML-DSA + Ed25519/ECDSA | Hybrid Signatures | ✅ Go |
@@ -29,6 +31,11 @@ Pure implementations of NIST Post-Quantum Cryptography standards across 8 progra
 | SLH-DSA | SHAKE-128f/s | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | SLH-DSA | SHAKE-192f/s | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | SLH-DSA | SHAKE-256f/s | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| FN-DSA | FN-DSA-512 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| FN-DSA | FN-DSA-1024 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| HQC | HQC-128 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| HQC | HQC-192 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| HQC | HQC-256 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 Full results: [`interop_results.json`](interop_results.json) · [`interop_results_all.json`](interop_results_all.json) · [`interop_results_all.txt`](interop_results_all.txt)
 
@@ -54,17 +61,34 @@ sig = sign(sk, b"hello", ML_DSA_65)
 assert verify(pk, b"hello", sig, ML_DSA_65)
 ```
 
+```go
+// Go — FN-DSA signing (FIPS 206 / FALCON)
+pk, sk, _ := fndsa.KeyGen(fndsa.FNDSA512, rand.Reader)
+sig, _ := fndsa.Sign(sk, []byte("hello"), fndsa.FNDSA512, rand.Reader)
+valid := fndsa.Verify(pk, []byte("hello"), sig, fndsa.FNDSA512)
+```
+
+```go
+// Go — HQC key encapsulation
+pk, sk, _ := hqc.KeyGen(hqc.HQC128, rand.Reader)
+ct, ss, _ := hqc.Encaps(pk, hqc.HQC128, rand.Reader)
+recovered, _ := hqc.Decaps(sk, ct, hqc.HQC128)
+// ss == recovered
+```
+
 See [`MANUAL.md`](MANUAL.md) for complete API reference in all 8 languages.
 
 ## Repository Structure
 
 ```
 PQC-Standards-Implementation/
-├── rust/                   # Rust implementations
+├── rust/                   # Rust implementations (ML-KEM, ML-DSA, SLH-DSA, FN-DSA, HQC)
 ├── go/                     # Go implementations
 │   ├── mlkem/              # ML-KEM (FIPS 203)
 │   ├── mldsa/              # ML-DSA (FIPS 204)
 │   ├── slhdsa/             # SLH-DSA (FIPS 205, SHAKE + SHA2)
+│   ├── fndsa/              # FN-DSA (FIPS 206 / FALCON)
+│   ├── hqc/                # HQC (Hamming Quasi-Cyclic KEM)
 │   ├── hybrid/             # Hybrid KEMs (X25519+ML-KEM, ECDH+ML-KEM)
 │   ├── composite/          # Composite Signatures (ML-DSA + Ed25519/ECDSA)
 │   ├── pqctls/             # PQ-TLS 1.3 named groups and cipher suites
@@ -72,10 +96,16 @@ PQC-Standards-Implementation/
 │       ├── generate-all-vectors/  # Test vector generator
 │       └── interop-verify/        # Cross-language verifier
 ├── js/                     # JavaScript (ES modules, Node.js 20+)
-├── python/                 # Python 3.10+
+│   ├── fndsa/              # FN-DSA
+│   └── hqc/                # HQC
+├── python/                 # Python 3.9+
+│   ├── fndsa/              # FN-DSA
+│   └── hqc/                # HQC
 ├── java/                   # Java 17+, Maven
 ├── dotnet/                 # C#/.NET 10+
-├── swift/                  # Swift 5.9+, CryptoKit
+├── swift/                  # Swift 5.9+
+│   ├── fndsa/              # FN-DSA
+│   └── hqc/                # HQC
 ├── php/                    # PHP 8.1+
 ├── interop/                # Cross-language test infrastructure
 │   ├── run_interop_comprehensive.sh   # Orchestrator (runs all 8 languages)
@@ -95,6 +125,7 @@ PQC-Standards-Implementation/
 │   ├── slh-dsa/
 │   │   ├── shake/          # SLH-DSA-SHAKE-{128,192,256}{f,s}
 │   │   └── sha2/           # SLH-DSA-SHA2-{128,192,256}{f,s}
+│   ├── fn-dsa/             # FN-DSA-512, FN-DSA-1024
 │   ├── hybrid-kem/         # X25519+ML-KEM-768/1024, ECDH-P256/P384+ML-KEM
 │   ├── composite-sig/      # ML-DSA-{44,65,87}+Ed25519, ML-DSA-65+ECDSA-P256
 │   └── pq-tls/             # PQ-TLS 1.3 X25519MLKEM768 key exchange
@@ -113,6 +144,7 @@ Test vectors are stored in `test-vectors/` organized by algorithm family. Each J
 | `test-vectors/ml-dsa/` | ML-DSA-44, 65, 87 | `{pk, sk, msg, sig}` |
 | `test-vectors/slh-dsa/shake/` | SHAKE-128f/s, 192f/s, 256f/s | `{pk, sk, msg, sig}` |
 | `test-vectors/slh-dsa/sha2/` | SHA2-128f/s, 192f/s, 256f/s | `{pk, sk, msg, sig}` |
+| `test-vectors/fn-dsa/` | FN-DSA-512, FN-DSA-1024 | `{pk, sk, msg, sig}` |
 | `test-vectors/hybrid-kem/` | 4 hybrid schemes | `{ek, dk, ct, ss, *_size}` |
 | `test-vectors/composite-sig/` | 4 composite schemes | `{pk, sk, msg, sig}` |
 | `test-vectors/pq-tls/` | X25519MLKEM768 key exchange | named groups, cipher suites, key exchange |
@@ -136,6 +168,10 @@ During cross-language testing, the following implementation bugs were found and 
 | Swift | ML-KEM | Wrong implicit rejection: `SHA3-256(z ‖ H(ct))` | Use `J(z ‖ ct)` = SHAKE-256 per FIPS 203 |
 | Java | SLH-DSA | All 12 parameter sets had wrong `hPrime`, `d`, `a` values | Corrected to FIPS 205 Table 1 |
 | Java | SLH-DSA | `(1L << 64) - 1 == 0` overflow for treeBits=64 | Skip mask when `treeBits == 64` |
+| Rust | FN-DSA | BigInt `round_div` truncated instead of floor division | Used `num_integer::div_floor` |
+| JS | FN-DSA | Gaussian sampler bit shift 2^22 instead of 2^21 | Fixed multiplier to 2097152 |
+| Go | HQC | RS Forney missing X_j = alpha^pos factor | Added `xj * omega / sigma'` |
+| Go | HQC | GF(256) polynomial accidentally changed to 0x11B | Reverted to spec-correct 0x11D |
 
 ## Documentation
 
@@ -155,7 +191,9 @@ See **[MANUAL.md](MANUAL.md)** for:
 - Implicit rejection on decapsulation failure (ML-KEM)
 - OS CSPRNG for all randomness (`SecureRandom`, `crypto/rand`, `OsRng`, etc.)
 - No unsafe code in crypto paths (Rust, Go)
-- All implementations verified against NIST FIPS 203/204/205 test vectors
+- All implementations verified against NIST FIPS 203/204/205/206 test vectors and cross-language interop
+- FN-DSA: non-canonical signature encoding rejected per FIPS 206 §3.11.5
+- HQC: Fujisaki-Okamoto CCA transform with constant-time comparison and implicit rejection
 
 ## License
 
